@@ -26,14 +26,30 @@ function loginWithGoogle() {
         alert("Firebase non è ancora pronto. Ricarica la pagina.");
         return;
     }
+
+    // Controlla se l'utente ha selezionato Admin o Player nel form
+    const roleInput = document.getElementById('role');
+    const adminCodeInput = document.getElementById('admin-code');
+    const selectedRole = roleInput ? roleInput.value : 'player';
+
+    if (selectedRole === 'admin') {
+        const code = adminCodeInput ? adminCodeInput.value.trim() : '';
+        if (code !== 'jamal') {
+            alert('Codice segreto Admin errato! Accesso negato.');
+            return;
+        }
+    }
+
     auth.signInWithPopup(googleProvider)
         .then((result) => {
             const user = result.user;
             const username = user.displayName || user.email.split('@')[0];
             
+            // Salva sessione con il ruolo scelto
             localStorage.setItem('username', username);
-            localStorage.setItem('role', 'player');
+            localStorage.setItem('role', selectedRole);
             
+            // Inizializza o aggiorna il profilo
             let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
             if (!profiles[username]) {
                 profiles[username] = {
@@ -42,17 +58,21 @@ function loginWithGoogle() {
                     unlockedColors: ['#f8fafc'],
                     completedMissions: []
                 };
-                localStorage.setItem('userProfiles', JSON.stringify(profiles));
+            } else if (user.photoURL && !profiles[username].customAvatar) {
+                // Se non ha impostato un'immagine personalizzata manuale, usa quella di Google
+                profiles[username].avatar = user.photoURL;
             }
 
-            window.location.href = 'hub.html';
+            localStorage.setItem('userProfiles', JSON.stringify(profiles));
+
+            // Reindirizza in base al ruolo scelto
+            window.location.href = (selectedRole === 'admin') ? 'admin.html' : 'hub.html';
         })
         .catch((error) => {
             console.error("ERRORE FIREBASE AUTH:", error.code, error.message);
             alert("Errore Google Login: " + error.message);
         });
 }
-
 
 /* ==========================================================================
    1. CONFIGURAZIONE LOGHI SQUADRE SERIE A & MISSIONI
