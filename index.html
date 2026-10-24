@@ -3,38 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SantosPredictor - Login</title>
+    <title>SantosPredictor - Accesso</title>
+    
+    <!-- Link al foglio di stile principale -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase App SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Auth SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background: #111827;
+            border: 1px solid #1f293d;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        .login-card h2 {
+            margin-bottom: 20px;
+            color: #00e5ff;
+        }
+        .login-card label {
+            display: block;
+            text-align: left;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        .login-card input, .login-card select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0d1424;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .login-card button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: none;
+            background: #00e5ff;
+            color: #090d16;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-card button:hover {
+            background: #00b4d8;
+        }
+        .google-btn {
+            background: #ffffff !important;
+            color: #1f293d !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .google-btn:hover {
+            background: #f1f5f9 !important;
+        }
+        .divider {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #1f293d;
+        }
+        .divider::before {
+            margin-right: 10px;
+        }
+        .divider::after {
+            margin-left: 10px;
+        }
+    </style>
 </head>
-<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
-    <div class="card" style="width: 100%; max-width: 400px;">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg" alt="Serie A" style="height: 45px; margin-bottom: 10px;">
-            <h2 class="brand-title" style="font-size: 1.5rem; margin:0;">SantosPredictor</h2>
-        </div>
-        
-        <label>Username Giocatore:</label>
-        <input type="text" id="username" placeholder="Inserisci il tuo nome">
+<body>
 
-        <label>Ruolo:</label>
-        <select id="role" onchange="toggleAdminCode(this.value)">
-            <option value="player">Player</option>
-            <option value="admin">Admin</option>
-        </select>
+    <div class="login-card">
+        <h2>⚽ SantosPredictor</h2>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px;">Accedi per inserire i tuoi pronostici di Serie A</p>
 
-        <div id="admin-code-container" style="display: none;">
-            <label>Codice Segreto Admin:</label>
-            <input type="password" id="admin-code" placeholder="Password admin">
-        </div>
+        <!-- Accesso con Google (Gmail) -->
+        <button type="button" class="google-btn" onclick="loginWithGoogle()">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.19v3.15C3.18 21.3 7.22 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.19C.43 8.15 0 9.89 0 12s.43 3.85 1.19 5.39l4.08-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.18 2.7 1.19 6.61l4.08 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/>
+            </svg>
+            Accedi con Google
+        </button>
 
-        <button onclick="login()" style="margin-top: 15px;">Accedi all'App</button>
+        <div class="divider">oppure manuale</div>
+
+        <!-- Form di Login Classico -->
+        <form onsubmit="event.preventDefault(); login();">
+            <label for="username">Nome / Username</label>
+            <input type="text" id="username" placeholder="Inserisci il tuo nome..." required>
+
+            <label for="role">Ruolo</label>
+            <select id="role" onchange="document.getElementById('admin-code-box').style.display = (this.value === 'admin') ? 'block' : 'none';">
+                <option value="player">Player</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <div id="admin-code-box" style="display: none;">
+                <label for="admin-code">Codice Segreto Admin</label>
+                <input type="password" id="admin-code" placeholder="Inserisci codice...">
+            </div>
+
+            <button type="submit">Entra nel Portale</button>
+        </form>
     </div>
 
+    <!-- Script principale del progetto -->
     <script src="js/app.js"></script>
-    <script>
-        function toggleAdminCode(val) {
-            document.getElementById('admin-code-container').style.display = val === 'admin' ? 'block' : 'none';
-        }
-    </script>
 </body>
 </html>
