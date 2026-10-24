@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profili e Pronostici Player</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <span id="user-display">Benvenuto</span>
+        <div>
+            <a href="hub.html">Pronostici</a>
+            <a href="profili.html" class="active">Profili & Schedine</a>
+            <a href="classifica.html">Classifica</a>
+            <span id="admin-link" style="display:none;"><a href="admin.html">Admin</a></span>
+            <button onclick="logout()" class="btn-logout">Esci</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Pronostici degli altri Player</h2>
+        <p>Qui puoi visualizzare le scelte fatte dai tuoi avversari.</p>
+        <div id="all-predictions-list"></div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        checkAuth();
+        loadAllPlayerPredictions();
+    </script>
+</body>
+</html>
