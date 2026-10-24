@@ -16,10 +16,9 @@ body {
     color: var(--text-color);
     margin: 0;
     padding-bottom: 90px;
-    transition: all 0.3s ease;
 }
 
-/* MODALITÀ PC / DESKTOP DESIDERATA */
+/* MODALITÀ PC / DESKTOP */
 body.pc-mode {
     padding-bottom: 30px;
 }
@@ -36,26 +35,31 @@ body.pc-mode .container {
     max-width: 1100px;
 }
 
-/* NAVBAR SUPERIORE */
+/* NAVBAR SUPERIORE CORRETTA */
 nav.top-nav {
     background-color: #101726;
     border-bottom: 1px solid var(--card-border);
-    padding: 12px 25px;
+    padding: 10px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    height: 60px; /* Altezza fissa per evitare ingrandimenti */
+    box-sizing: border-box;
 }
 
 .brand-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
+/* LOGO RIDIMENSIONATO CORRETTAMENTE */
 .seriea-logo {
-    height: 32px;
-    width: auto;
+    height: 35px !important;
+    max-height: 35px !important;
+    width: auto !important;
+    object-fit: contain;
 }
 
 .brand-title {
@@ -65,6 +69,7 @@ nav.top-nav {
     background: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    white-space: nowrap;
 }
 
 .top-actions {
@@ -73,21 +78,23 @@ nav.top-nav {
     gap: 12px;
 }
 
+/* LINK TOP NAV STILIZZATI E PULITI */
 .top-nav-links {
     display: none;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .top-nav-links a {
-    color: var(--text-muted);
-    text-decoration: none;
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
     font-size: 0.9rem;
     font-weight: 600;
+    transition: color 0.2s;
 }
 
 .top-nav-links a:hover, .top-nav-links a.active {
-    color: var(--primary-cyan);
+    color: var(--primary-cyan) !important;
 }
 
 .device-toggle-btn {
@@ -104,8 +111,8 @@ nav.top-nav {
 
 .btn-discord-top {
     background-color: var(--discord-color);
-    color: white;
-    text-decoration: none;
+    color: white !important;
+    text-decoration: none !important;
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 0.8rem;
@@ -151,7 +158,7 @@ nav.bottom-nav {
     color: var(--primary-cyan);
 }
 
-/* CONTAINER E CARD PARTITA */
+/* CONTAINER E CARD */
 .container {
     max-width: 800px;
     margin: 30px auto;
@@ -167,7 +174,6 @@ nav.bottom-nav {
     box-shadow: 0 8px 16px rgba(0,0,0,0.3);
 }
 
-/* INTESTAZIONE SQUADRE CON LOGHI */
 .match-header {
     display: flex;
     align-items: center;
@@ -190,7 +196,6 @@ nav.bottom-nav {
     height: 48px;
     object-fit: contain;
     margin-bottom: 8px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .team-badge span {
