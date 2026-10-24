@@ -1,5 +1,5 @@
 /* ==========================================================================
-   STILI GENERALI & TEMA NEON CYBERPUNK
+   STILI GENERALI & TEMA NEON CYBERPUNK (Spostato più a destra)
    ========================================================================== */
 :root {
     --bg-main: #070a12;
@@ -29,10 +29,13 @@ body {
     min-height: 100vh;
 }
 
-/* Layout stretto Mobile-First */
+/* Layout stretto Mobile-First spostato visivamente più a destra */
 body:not(.pc-mode) {
     max-width: 440px;
     margin: 0 auto;
+    margin-right: auto; 
+    margin-left: auto;
+    padding-left: 16px; /* Spinge i contenuti leggermente a destra */
 }
 
 /* ==========================================================================
@@ -49,6 +52,7 @@ body:not(.pc-mode) {
     border: 1px solid var(--card-border);
     margin-bottom: 18px;
     position: relative;
+    z-index: 10000; /* Sempre sopra */
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
@@ -64,17 +68,24 @@ body:not(.pc-mode) {
     gap: 12px;
 }
 
-/* Logo Serie A Cliccabile */
-.seriea-logo {
-    width: 32px;
-    height: 38px;
-    object-fit: contain;
-    cursor: pointer;
-    filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+/* Badge Serie A testuale */
+.seriea-logo-container {
+    background: #000;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--primary-cyan);
+    letter-spacing: 1px;
+    border: 1px solid var(--card-border);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.2s;
 }
 
-.seriea-logo:hover {
+.seriea-logo-container:hover {
     transform: scale(1.1);
 }
 
@@ -100,7 +111,7 @@ body:not(.pc-mode) {
     box-shadow: 0 0 5px var(--primary-cyan);
 }
 
-/* Menu a Tendina a Scomparsa */
+/* Menu a Tendina a Scomparsa (In primo piano a destra) */
 .nav-links {
     display: none;
     flex-direction: column;
@@ -108,14 +119,14 @@ body:not(.pc-mode) {
     top: 65px;
     right: 0;
     width: 220px;
-    background: rgba(13, 20, 36, 0.95);
+    background: rgba(13, 20, 36, 0.98);
     backdrop-filter: blur(15px);
     border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 12px;
     gap: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    z-index: 100;
+    z-index: 10001 !important;
 }
 
 .nav-links.show {
@@ -142,7 +153,7 @@ body:not(.pc-mode) {
 }
 
 /* ==========================================================================
-   CARDS & PARTITE CON EFFETTO NEON
+   CARDS & PARTITE (FIX PROBLEMA MENU A TENDINA CHE VA DIETRO)
    ========================================================================== */
 .card, .match-box {
     background: var(--card-bg);
@@ -152,7 +163,9 @@ body:not(.pc-mode) {
     padding: 16px;
     margin-bottom: 15px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    transition: border-color 0.3s, transform 0.2s;
+    /* IMPORTANTE: Niente overflow hidden o z-index bloccati per non nascondere i select */
+    position: relative;
+    z-index: 1; 
 }
 
 .match-box:hover {
@@ -198,7 +211,7 @@ body:not(.pc-mode) {
 }
 
 /* ==========================================================================
-   FORM, INPUT & PULSANTI
+   FORM, INPUT & SELECT (SEMPRE IN PRIMO PIANO)
    ========================================================================== */
 label {
     display: block;
@@ -223,16 +236,20 @@ select {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input[type="text"]:focus, select:focus {
-    border-color: var(--primary-cyan);
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
-}
-
+/* RISOLUZIONE DEFINITIVA: I menu a tendina avranno sempre la precedenza visiva */
 select {
+    position: relative;
+    z-index: 9999 !important;
+    background-color: var(--input-bg) !important;
     background-image: url("data:image/svg+xml;utf8,<svg fill='%2300e5ff' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
     background-repeat: no-repeat;
     background-position: right 10px center;
     padding-right: 32px;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: var(--primary-cyan);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 button {
@@ -260,31 +277,9 @@ button:active {
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
 }
 
-/* Mode PC */
+/* Modalità PC */
 body.pc-mode {
     max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-}
-/* Risolve il problema del menu a tendina che va "dietro" */
-select {
-    position: relative;
-    z-index: 50;
-    background-color: var(--input-bg) !important;
-}
-
-/* Corregge la visualizzazione del logo Serie A nella navbar */
-.seriea-logo-container {
-    background: #000;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-weight: 900;
-    font-size: 0.85rem;
-    color: var(--primary-cyan);
-    letter-spacing: 1px;
-    border: 1px solid var(--card-border);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
