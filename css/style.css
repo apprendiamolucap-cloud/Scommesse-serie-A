@@ -5,6 +5,7 @@ body {
     padding: 0;
     color: #333;
 }
+
 nav {
     background-color: #1e1e2f;
     color: white;
@@ -13,20 +14,24 @@ nav {
     justify-content: space-between;
     align-items: center;
 }
+
 nav a {
     color: white;
     text-decoration: none;
     margin-left: 20px;
     font-weight: bold;
 }
+
 nav a.active {
     color: #00d2ff;
 }
+
 .container {
     max-width: 800px;
     margin: 30px auto;
     padding: 20px;
 }
+
 .card {
     background: white;
     padding: 20px;
@@ -34,6 +39,7 @@ nav a.active {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 20px;
 }
+
 input, select {
     width: 100%;
     padding: 10px;
@@ -42,6 +48,7 @@ input, select {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 button {
     background-color: #00d2ff;
     color: #1e1e2f;
@@ -51,16 +58,20 @@ button {
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
+    margin-top: 5px;
 }
+
 button:hover {
     background-color: #00b3d8;
 }
+
 .btn-logout {
     background-color: #ff4d4d;
     color: white;
     width: auto;
     padding: 5px 10px;
 }
+
 .match-box {
     background: white;
     padding: 15px;
@@ -68,6 +79,7 @@ button:hover {
     margin-bottom: 15px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+
 .ranking-table {
     width: 100%;
     background: white;
@@ -76,11 +88,13 @@ button:hover {
     overflow: hidden;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+
 .ranking-table th, .ranking-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
+
 .ranking-table th {
     background-color: #1e1e2f;
     color: white;
