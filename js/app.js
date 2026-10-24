@@ -1,9 +1,6 @@
 /* ==========================================================================
-   0. CONFIGURAZIONE FIREBASE & GOOGLE AUTH (GMAIL)
+   0. CONFIGURAZIONE & GOOGLE AUTH (GMAIL) VIA FIREBASE CDN
    ========================================================================== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
 const firebaseConfig = {
     apiKey: "AIzaSyByIrkfzoKxatFbdsaedpgGs7duWDpYidw",
     authDomain: "serie-a-ce615.firebaseapp.com",
@@ -14,13 +11,22 @@ const firebaseConfig = {
     measurementId: "G-90CQRJ2H8H"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+// Inizializzazione Firebase globale (funziona se carichi gli script SDK nell'HTML)
+let auth, googleProvider;
+try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    googleProvider = new firebase.auth.GoogleAuthProvider();
+} catch (e) {
+    console.log("Firebase SDK non ancora caricato o già inizializzato.");
+}
 
 function loginWithGoogle() {
-    console.log("Tentativo di accesso con Google avviato...");
-    signInWithPopup(auth, googleProvider)
+    if (!auth) {
+        alert("Firebase non è ancora pronto. Ricarica la pagina.");
+        return;
+    }
+    auth.signInWithPopup(googleProvider)
         .then((result) => {
             const user = result.user;
             const username = user.displayName || user.email.split('@')[0];
@@ -46,8 +52,6 @@ function loginWithGoogle() {
             alert("Errore Google Login: " + error.message);
         });
 }
-
-window.loginWithGoogle = loginWithGoogle;
 
 
 /* ==========================================================================
