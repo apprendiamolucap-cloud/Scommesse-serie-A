@@ -233,7 +233,7 @@ function selectNameColor(colorHex) {
 
 
 /* ==========================================================================
-   3. HUB PRONOSTICI (CON MENU A TENDINA)
+   3. HUB PRONOSTICI (RISULTATO SCRITTO + GIOCATORI SELEZIONABILI)
    ========================================================================== */
 function isPredictionsLocked() {
     return localStorage.getItem('predictionsLocked') === 'true';
@@ -257,7 +257,7 @@ function loadHubMatches() {
         if (globalLocked || userHasSubmitted) {
             statusContainer.innerHTML = "<p style='color: var(--danger); font-weight:bold;'>🔒 Schedina inviata o bloccata. Impossibile modificare.</p>";
         } else {
-            statusContainer.innerHTML = "<p style='color: var(--primary-green); font-weight:bold;'>🔓 Schedina Aperta. Scegli il tuo Jolly e seleziona i pronostici!</p>";
+            statusContainer.innerHTML = "<p style='color: var(--primary-green); font-weight:bold;'>🔓 Schedina Aperta. Scegli il tuo Jolly e inserisci i pronostici!</p>";
         }
     }
 
@@ -266,8 +266,6 @@ function loadHubMatches() {
         container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Nessuna partita disponibile.</p>';
         return;
     }
-
-    const commonResults = ["", "0-0", "1-0", "0-1", "1-1", "2-0", "0-2", "2-1", "1-2", "2-2", "3-0", "0-3", "3-1", "1-3", "3-2", "2-3", "4-0", "0-4"];
 
     matches.forEach(match => {
         let userPred = (predictions[currentUser] && predictions[currentUser][match.id]) 
@@ -279,8 +277,6 @@ function loadHubMatches() {
         let isJokerChecked = userJoker == match.id ? 'checked' : '';
 
         let matchPlayers = [...getTeamPlayers(match.home), ...getTeamPlayers(match.away)];
-
-        let resOptions = commonResults.map(r => `<option value="${r}" ${userPred.res === r ? 'selected' : ''}>${r === '' ? '-- Seleziona Risultato --' : r}</option>`).join('');
         
         let playerOptions = `<option value="">-- Nessuno / Seleziona --</option>`;
         let assistOptions = `<option value="">-- Nessuno / Seleziona --</option>`;
@@ -305,8 +301,8 @@ function loadHubMatches() {
                     <input type="radio" name="jokerMatch" value="${match.id}" ${isJokerChecked} ${disabledAttr} style="width:auto; margin:0;">
                 </div>
 
-                <label>Risultato Esatto:</label>
-                <select id="pred-res-${match.id}" ${disabledAttr}>${resOptions}</select>
+                <label>Risultato Esatto (es. 2-1):</label>
+                <input type="text" id="pred-res-${match.id}" value="${userPred.res || ''}" placeholder="es. 2-1" ${disabledAttr}>
                 
                 <label>Marcatore (+2 pt):</label>
                 <select id="pred-scorer-${match.id}" ${disabledAttr}>${playerOptions}</select>
@@ -342,8 +338,9 @@ function submitAllPredictions() {
     if (!predictions[currentUser]) predictions[currentUser] = {};
 
     matches.forEach(match => {
+        const resInput = document.getElementById(`pred-res-${match.id}`);
         predictions[currentUser][match.id] = {
-            res: document.getElementById(`pred-res-${match.id}`).value,
+            res: resInput ? resInput.value.trim() : '',
             scorer: document.getElementById(`pred-scorer-${match.id}`).value,
             assist: document.getElementById(`pred-assist-${match.id}`).value,
             ownGoal: document.getElementById(`pred-owngoal-${match.id}`).value
@@ -382,7 +379,7 @@ function loadAllPlayerPredictions() {
 
 
 /* ==========================================================================
-   4. PANNELLO ADMIN (CON MENU A TENDINA)
+   4. PANNELLO ADMIN (RISULTATO SCRITTO + GIOCATORI SELEZIONABILI)
    ========================================================================== */
 function togglePredictionsLock() {
     let locked = isPredictionsLocked();
@@ -441,11 +438,8 @@ function loadAdminMatches() {
     container.innerHTML = '';
     if (matches.length === 0) { container.innerHTML = '<p>Nessuna partita presente.</p>'; return; }
 
-    const commonResults = ["", "0-0", "1-0", "0-1", "1-1", "2-0", "0-2", "2-1", "1-2", "2-2", "3-0", "0-3", "3-1", "1-3", "3-2", "2-3", "4-0", "0-4"];
-
     matches.forEach(match => {
         let matchPlayers = [...getTeamPlayers(match.home), ...getTeamPlayers(match.away)];
-        let resOpts = commonResults.map(r => `<option value="${r}" ${match.result === r ? 'selected' : ''}>${r === '' ? '-- Risultato Reale --' : r}</option>`).join('');
         
         let pOpts = `<option value="">-- Marcatore Reale --</option>`;
         let aOpts = `<option value="">-- Assist Reale --</option>`;
@@ -464,8 +458,8 @@ function loadAdminMatches() {
                     <div class="vs-divider">VS</div>
                     <div class="team-badge"><img src="${getTeamLogo(match.away)}" alt="${match.away}"><span>${match.away}</span></div>
                 </div>
-                <label>Risultato Reale:</label>
-                <select id="res-${match.id}">${resOpts}</select>
+                <label>Risultato Reale (es. 2-1):</label>
+                <input type="text" id="res-${match.id}" value="${match.result || ''}" placeholder="es. 2-1">
                 <label>Marcatore Reale:</label>
                 <select id="scorer-${match.id}">${pOpts}</select>
                 <label>Assist Reale:</label>
@@ -485,7 +479,8 @@ function saveRealResult(matchId) {
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.map(m => {
         if (m.id == matchId) {
-            m.result = document.getElementById(`res-${matchId}`).value;
+            const resInput = document.getElementById(`res-${matchId}`);
+            m.result = resInput ? resInput.value.trim() : '';
             m.scorer = document.getElementById(`scorer-${matchId}`).value;
             m.assist = document.getElementById(`assist-${matchId}`).value;
             m.ownGoal = document.getElementById(`owngoal-${matchId}`).value;
