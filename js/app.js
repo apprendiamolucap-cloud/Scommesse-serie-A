@@ -63,8 +63,15 @@ function loginWithGoogle() {
 
 
 /* ==========================================================================
-   1. GESTIONE MODALITÀ SCHERMO (VISTA TEL / VISTA PC)
+   1. GESTIONE MENU A TENDINA & SCHERMO
    ========================================================================== */
+function toggleNavMenu() {
+    const navMenu = document.getElementById('nav-menu');
+    if (navMenu) {
+        navMenu.classList.toggle('show');
+    }
+}
+
 function toggleDeviceMode() {
     let mode = localStorage.getItem('deviceMode') || 'mobile';
     let newMode = mode === 'mobile' ? 'pc' : 'mobile';
@@ -197,7 +204,7 @@ function checkAuth() {
     if (userDisplay) userDisplay.innerText = `👤 ${user}`;
 
     const adminLink = document.getElementById('admin-link');
-    if (adminLink && getCurrentRole() === 'admin') adminLink.style.display = 'flex';
+    if (adminLink && getCurrentRole() === 'admin') adminLink.style.display = 'block';
 }
 
 function getUserProfile(username) {
@@ -249,7 +256,7 @@ function selectNameColor(colorHex) {
 
 
 /* ==========================================================================
-   4. HUB PRONOSTICI (ISOLATI PER UTENTE E RISULTATO MANUALE)
+   4. HUB PRONOSTICI (ISOLAMENTO PER NOME UTENTE)
    ========================================================================== */
 function isPredictionsLocked() {
     return localStorage.getItem('predictionsLocked') === 'true';
@@ -265,7 +272,7 @@ function loadHubMatches() {
     let jokers = JSON.parse(localStorage.getItem('jokers')) || {};
     const currentUser = getCurrentUser();
 
-    // Legge SOLO i pronostici salvati per l'utente corrente
+    // Carica SOLO i pronostici dell'utente corrente
     let userPredictions = predictions[currentUser] || {};
     let userHasSubmitted = Object.keys(userPredictions).length > 0;
     let globalLocked = isPredictionsLocked();
