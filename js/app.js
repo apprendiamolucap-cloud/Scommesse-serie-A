@@ -9,6 +9,7 @@ function getCurrentRole() {
 function login() {
     const usernameInput = document.getElementById('username');
     const roleInput = document.getElementById('role');
+    const adminCodeInput = document.getElementById('admin-code');
     
     if (!usernameInput || !roleInput) return;
 
@@ -18,6 +19,15 @@ function login() {
     if (!username) {
         alert('Inserisci un username valido!');
         return;
+    }
+
+    // Se sceglie Admin, controlla il codice segreto
+    if (role === 'admin') {
+        const code = adminCodeInput ? adminCodeInput.value.trim() : '';
+        if (code !== 'jamal') {
+            alert('Codice segreto Admin errato! Accesso negato.');
+            return;
+        }
     }
 
     localStorage.setItem('username', username);
@@ -203,7 +213,7 @@ function savePrediction(matchId) {
     alert('Pronostico salvato con successo!');
 }
 
-// --- CALCOLO PUNTEGGI ESATTO SECONDO LE TUE REGOLE ---
+// --- CALCOLO PUNTEGGI ---
 
 function calculateAllPoints() {
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
@@ -223,7 +233,6 @@ function calculateAllPoints() {
             let realRes = match.result; 
             let userRes = pred.res;       
 
-            // 1. Risultato Esatto = 3 punti / Squadra vincitrice presa (senza ris. esatto) = 1 punto
             if (userRes === realRes && realRes !== "") {
                 scores[user] += 3;
             } else if (userRes && realRes) {
@@ -235,22 +244,19 @@ function calculateAllPoints() {
                     let userWinner = Math.sign(uHome - uAway);
 
                     if (realWinner === userWinner) {
-                        scores[user] += 1; // Squadra vincitrice presa
+                        scores[user] += 1;
                     }
                 }
             }
 
-            // 2. Marcatore = 2 punti
             if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
                 scores[user] += 2;
             }
 
-            // 3. Assist = 0.5 punti
             if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
                 scores[user] += 0.5;
             }
 
-            // 4. Autogol = -2 punti
             if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
                 scores[user] -= 2;
             }
