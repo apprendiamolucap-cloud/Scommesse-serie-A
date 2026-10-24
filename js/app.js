@@ -63,11 +63,10 @@ function addMatch() {
         return;
     }
 
-    // Recupera la lista globale delle partite (condivisa con tutti i player)
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     
     const newMatch = {
-        id: Date.now(),
+        id: Date.now() + Math.random(), // ID univoco sicuro
         home: home,
         away: away,
         result: null, 
@@ -77,14 +76,29 @@ function addMatch() {
     };
 
     matches.push(newMatch);
-    
-    // Salva nel localStorage globale
     localStorage.setItem('matches', JSON.stringify(matches));
     
-    alert('Partita creata e salvata con successo!');
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
     
+    loadAdminMatches();
+}
+
+// Funzione per caricare automaticamente una finta/intera giornata di Serie A con un click
+function loadSampleSerieAMatches() {
+    const sampleMatches = [
+        { id: 101, home: "Inter", away: "Milan", result: null, scorer: null, assist: null, ownGoal: null },
+        { id: 102, home: "Juventus", away: "Napoli", result: null, scorer: null, assist: null, ownGoal: null },
+        { id: 103, home: "Roma", away: "Lazio", result: null, scorer: null, assist: null, ownGoal: null },
+        { id: 104, home: "Atalanta", away: "Fiorentina", result: null, scorer: null, assist: null, ownGoal: null },
+        { id: 105, home: "Bologna", away: "Torino", result: null, scorer: null, assist: null, ownGoal: null }
+    ];
+
+    let matches = JSON.parse(localStorage.getItem('matches')) || [];
+    
+    // Evita i duplicati unendo o sostituendo
+    localStorage.setItem('matches', JSON.stringify(sampleMatches));
+    alert('Giornata di Serie A caricata con successo!');
     loadAdminMatches();
 }
 
@@ -96,7 +110,7 @@ function loadAdminMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita inserita al momento. Usa il form sopra per crearne una.</p>';
+        container.innerHTML = '<p>Nessuna partita inserita. Usa il pulsante sopra per caricare la giornata di Serie A o creane una manualmente.</p>';
         return;
     }
 
@@ -123,7 +137,7 @@ function saveRealResult(matchId) {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.map(m => {
-        if (m.id === Number(matchId)) {
+        if (m.id == matchId) {
             m.result = res;
             m.scorer = scorer;
             m.assist = assist;
@@ -145,7 +159,6 @@ function loadHubMatches() {
     const container = document.getElementById('matches-list');
     if (!container) return;
 
-    // Legge l'elenco globale delle partite create dall'admin
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
     const currentUser = getCurrentUser();
@@ -153,7 +166,7 @@ function loadHubMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita creata dall\'admin per questa giornata.</p>';
+        container.innerHTML = '<p>Nessuna partita disponibile per questa giornata.</p>';
         return;
     }
 
@@ -163,7 +176,7 @@ function loadHubMatches() {
         container.innerHTML += `
             <div class="match-box">
                 <h3>${match.home} vs ${match.away}</h3>
-                <label>Risultato Esatto:</label>
+                <label>Risultato Esatto (es. 2-1):</label>
                 <input type="text" id="pred-res-${match.id}" value="${userPred.res}" placeholder="es. 2-1">
                 
                 <label>Marcatore Scelto (+2 pt):</label>
@@ -197,7 +210,6 @@ function savePrediction(matchId) {
     predictions[currentUser][matchId] = { res, scorer, assist, ownGoal };
     localStorage.setItem('predictions', JSON.stringify(predictions));
     
-    calculateAllPoints();
     alert('Pronostico salvato con successo!');
 }
 
@@ -214,7 +226,7 @@ function calculateAllPoints() {
         let userMatches = predictions[user];
 
         matches.forEach(match => {
-            if (!match.result) return; // Salta se non c'è un risultato reale inserito
+            if (!match.result) return; 
 
             let pred = userMatches[match.id];
             if (!pred) return;
@@ -222,5 +234,67 @@ function calculateAllPoints() {
             let realRes = match.result; 
             let userRes = pred.res;       
 
-            // 1. Risultato Esatto (+3 pt) o Segno/Squadra Vincitrice (+1 pt)
+            // 1. Risultato Esatto (+3 pt) o Segno Vincitrice (+1 pt)
             if (userRes === realRes && realRes !== "") {
+                scores[user] += 3;
+            } else if (userRes && realRes) {
+                let [rHome, rAway] = realRes.split('-').map(Number);
+                let [uHome, uAway] = userRes.split('-').map(Number);
+
+                if (!isNaN(rHome) && !isNaN(uHome) && !isNaN(rAway) && !isNaN(uAway)) {
+                    let realWinner = Math.sign(rHome - rAway);
+                    let userWinner = Math.sign(uHome - uAway);
+
+                    if (realWinner === userWinner) {
+                        scores[user] += 1; // Squadra vincente presa
+                    }
+                }
+            }
+
+            // 2. Marcatore (+2 pt)
+            if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
+                scores[user] += 2;
+            }
+
+            // 3. Assist (+0.5 pt)
+            if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
+                scores[user] += 0.5;
+            }
+
+            // 4. Autogol (-2 pt)
+            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
+                scores[user] -= 2;
+            }
+        });
+    });
+
+    localStorage.setItem('scores', JSON.stringify(scores));
+}
+
+
+// --- CARICAMENTO CLASSIFICA ---
+
+function loadLeaderboard() {
+    const tbody = document.getElementById('ranking-body');
+    if (!tbody) return;
+
+    let scores = JSON.parse(localStorage.getItem('scores')) || {};
+    let sortedUsers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+
+    tbody.innerHTML = '';
+
+    if (sortedUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio ancora registrato.</td></tr>';
+        return;
+    }
+
+    sortedUsers.forEach((user, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>#${index + 1}</td>
+                <td>${user}</td>
+                <td><strong>${scores[user]}</strong> pt</td>
+            </tr>
+        `;
+    });
+}
