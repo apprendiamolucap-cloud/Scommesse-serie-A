@@ -11,6 +11,7 @@
         <span id="user-display">Benvenuto</span>
         <div>
             <a href="hub.html" class="active">Pronostici</a>
+            <a href="profili.html">Profili & Schedine</a>
             <a href="classifica.html">Classifica</a>
             <span id="admin-link" style="display:none;"><a href="admin.html">Admin</a></span>
             <button onclick="logout()" class="btn-logout">Esci</button>
@@ -19,7 +20,7 @@
 
     <div class="container">
         <h2>Schedina Giornata</h2>
-        <p>Inserisci i tuoi pronostici per la giornata di Serie A.</p>
+        <div id="lock-status" style="margin-bottom: 20px; font-weight: bold;"></div>
         <div id="matches-list"></div>
     </div>
 
