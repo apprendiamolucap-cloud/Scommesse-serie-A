@@ -13,18 +13,36 @@
 </head>
 <body>
 
-    <!-- Navigation Bar con Link Discord integrato -->
+    <!-- Navigation Bar con Logo Serie A e Tre Lineette -->
     <div class="navbar">
-        <h2 style="margin: 0; color: var(--primary-cyan);">⚽ SantosPredictor</h2>
-        <div class="nav-links">
-            <a href="hub.html" class="active">Hub Schedina</a>
-            <a href="community.html">Community</a>
-            <a href="classifica.html">Classifica</a>
-            <a href="profili.html">Profilo</a>
-            <a href="https://discord.gg/Gmn6zE942" target="_blank" style="color: #5865F2; display: flex; align-items: center; gap: 4px;">💬 Discord</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">Admin</a>
-            <button id="device-btn" onclick="toggleDeviceMode()" style="width: auto; padding: 6px 10px; font-size: 0.8rem; background: #1f293d; color: var(--primary-cyan);">📱 Vista Tel</button>
-            <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
+        <div class="nav-brand">
+            <h2 style="margin: 0; color: var(--primary-cyan); font-size: 1.15rem;">⚽ SantosPredictor</h2>
+        </div>
+
+        <div class="nav-controls">
+            <!-- Logo Serie A che porta al sito ufficiale -->
+            <a href="https://www.legaseriea.it" target="_blank" title="Vai al sito Serie A">
+                <img src="https://img.legaseriea.it/v3/assets/blt3f120170a48a85f4/bltcb2a353d98fb83fa/669622d561a3371fa9cf89a9/SerieA_Enilive_Full_RGB.png" alt="Serie A" class="seriea-logo">
+            </a>
+
+            <!-- Pulsante con 3 Lineette (Hamburger) -->
+            <button class="hamburger-btn" onclick="toggleNavMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Menu a scomparsa -->
+        <div class="nav-links" id="nav-menu">
+            <a href="hub.html" class="active">🏠 Hub Schedina</a>
+            <a href="community.html">👥 Community</a>
+            <a href="classifica.html">🏆 Classifica</a>
+            <a href="profili.html">👤 Profilo</a>
+            <a href="https://discord.gg/Gmn6zE942" target="_blank" style="color: #5865F2;">💬 Server Discord</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">⚙️ Pannello Admin</a>
+            <button id="device-btn" onclick="toggleDeviceMode()">🖥️ Vista PC</button>
+            <a href="#" onclick="logout()" style="color: #ef4444;">🚪 Esci</a>
         </div>
     </div>
 
