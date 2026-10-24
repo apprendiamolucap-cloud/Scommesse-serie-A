@@ -283,3 +283,29 @@ body.pc-mode {
     margin: 0 auto;
     padding: 20px;
 }
+/* ==========================================================================
+   FIX DEFINITIVO TENDINA E MENU SU CELLULARE
+   ========================================================================== */
+
+/* Quando il menu hamburger è aperto, forziamo la massima priorità visiva */
+.nav-links.show {
+    display: flex !important;
+    z-index: 999999 !important;
+    position: fixed !important;
+    top: 70px !important;
+    right: 15px !important;
+    left: 15px !important;
+    width: auto !important;
+}
+
+/* Evita che i box delle partite coprano i menu a tendina nativi del telefono */
+.match-box {
+    position: relative;
+    z-index: 1;
+}
+
+/* Forza i select a non essere intrappolati dai contesti di livello */
+select {
+    position: relative;
+    z-index: 10 !important;
+}
