@@ -1,192 +1,94 @@
+/* ==========================================================================
+   STILI GENERALI & TEMA DARK CYBERPUNK
+   ========================================================================== */
 :root {
-    --bg-color: #0b111e;
-    --card-bg: #151f32;
-    --card-border: #233148;
-    --text-color: #f8fafc;
-    --text-muted: #8b9bb4;
+    --bg-main: #090d16;
+    --card-bg: #111827;
+    --card-border: #1f293d;
     --primary-cyan: #00e5ff;
     --primary-green: #00e676;
-    --discord-color: #5865F2;
-    --danger: #ff5252;
+    --danger: #ef4444;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --input-bg: #0d1424;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    padding-bottom: 90px;
+    padding: 12px;
+    min-height: 100vh;
 }
 
-/* MODALITÀ PC / DESKTOP */
-body.pc-mode {
-    padding-bottom: 30px;
-}
-
-body.pc-mode .bottom-nav {
-    display: none !important;
-}
-
-body.pc-mode .top-nav-links {
-    display: flex !important;
-}
-
-body.pc-mode .container {
-    max-width: 1100px;
-}
-
-/* NAVBAR SUPERIORE CORRETTA */
-nav.top-nav {
-    background-color: #101726;
-    border-bottom: 1px solid var(--card-border);
-    padding: 10px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    height: 60px; /* Altezza fissa per evitare ingrandimenti */
-    box-sizing: border-box;
-}
-
-.brand-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* LOGO RIDIMENSIONATO CORRETTAMENTE */
-.seriea-logo {
-    height: 35px !important;
-    max-height: 35px !important;
-    width: auto !important;
-    object-fit: contain;
-}
-
-.brand-title {
-    font-size: 1.2rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    background: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    white-space: nowrap;
-}
-
-.top-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* LINK TOP NAV STILIZZATI E PULITI */
-.top-nav-links {
-    display: none;
-    align-items: center;
-    gap: 20px;
-}
-
-.top-nav-links a {
-    color: var(--text-muted) !important;
-    text-decoration: none !important;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: color 0.2s;
-}
-
-.top-nav-links a:hover, .top-nav-links a.active {
-    color: var(--primary-cyan) !important;
-}
-
-.device-toggle-btn {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    color: var(--primary-cyan);
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
-    width: auto;
-}
-
-.btn-discord-top {
-    background-color: var(--discord-color);
-    color: white !important;
-    text-decoration: none !important;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* NAVBAR IN BASSO (MOBILE) */
-nav.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #101726;
-    border-top: 1px solid var(--card-border);
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    z-index: 1000;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
-}
-
-.nav-item {
+/* ==========================================================================
+   NAVBAR RESPONSIVA (MOBILE FIRST)
+   ========================================================================== */
+.navbar {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 12px;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 20px;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 18px;
+    width: 100%;
+}
+
+.nav-links a {
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
 }
 
-.nav-item svg {
-    width: 22px;
-    height: 22px;
-    margin-bottom: 4px;
-    fill: currentColor;
-}
-
-.nav-item:hover, .nav-item.active {
+.nav-links a.active, .nav-links a:hover {
     color: var(--primary-cyan);
+    background: rgba(0, 229, 255, 0.1);
 }
 
-/* CONTAINER E CARD */
-.container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 0 15px;
-}
-
+/* ==========================================================================
+   CARD & CONTENITORI
+   ========================================================================== */
 .card, .match-box {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    padding: 20px;
     border-radius: 14px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .match-header {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 15px;
 }
 
 .team-badge {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 6px;
     width: 40%;
     text-align: center;
 }
@@ -195,13 +97,11 @@ nav.bottom-nav {
     width: 48px;
     height: 48px;
     object-fit: contain;
-    margin-bottom: 8px;
 }
 
 .team-badge span {
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: var(--text-color);
+    font-weight: bold;
+    font-size: 0.95rem;
 }
 
 .vs-divider {
@@ -210,75 +110,85 @@ nav.bottom-nav {
     font-size: 1.1rem;
 }
 
+/* ==========================================================================
+   INPUT, SELECT & PULSANTI OTTIMIZZATI PER MOBILE (TOUCH-FRIENDLY)
+   ========================================================================== */
 label {
     display: block;
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin-top: 10px;
+    margin: 10px 0 4px 2px;
 }
 
-input, select {
+input[type="text"], 
+input[type="password"], 
+select {
     width: 100%;
-    padding: 12px;
-    margin: 6px 0 12px 0;
-    background-color: #0b111e;
-    border: 1px solid var(--card-border);
-    color: var(--text-color);
+    padding: 12px 14px;
     border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
+    border: 1px solid #334155;
+    background-color: var(--input-bg);
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 8px;
+    -webkit-appearance: none; /* Rimuove lo stile predefinito iOS */
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary-cyan);
+select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 35px;
 }
 
 button {
-    background: linear-gradient(135deg, #00b0ff, #00e676);
-    color: #0b111e;
-    border: none;
-    padding: 12px 20px;
-    font-weight: 700;
-    border-radius: 8px;
-    cursor: pointer;
     width: 100%;
-    transition: opacity 0.2s;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary-cyan);
+    color: #090d16;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: filter 0.2s;
 }
 
-button:hover {
-    opacity: 0.9;
+button:active {
+    filter: brightness(0.85);
 }
 
 .btn-danger {
     background: var(--danger) !important;
-    color: white !important;
+    color: #fff !important;
 }
 
-.btn-logout {
-    background: var(--danger);
-    color: white;
-    width: auto;
-    padding: 6px 14px;
-    font-size: 0.8rem;
-}
+/* ==========================================================================
+   MEDIA QUERIES PER TABLET & DESKTOP (PIÙ DI 600px)
+   ========================================================================== */
+@media (min-width: 600px) {
+    body {
+        padding: 20px;
+    }
 
-.ranking-table {
-    width: 100%;
-    background: var(--card-bg);
-    border-collapse: collapse;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--card-border);
-}
+    .navbar {
+        flex-direction: row;
+        padding: 15px 25px;
+    }
 
-.ranking-table th, .ranking-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--card-border);
-}
+    .nav-links {
+        width: auto;
+        gap: 20px;
+    }
 
-.ranking-table th {
-    background-color: #0d1424;
-    color: var(--text-muted);
+    .card, .match-box {
+        padding: 24px;
+    }
+
+    .team-badge img {
+        width: 56px;
+        height: 56px;
+    }
 }
