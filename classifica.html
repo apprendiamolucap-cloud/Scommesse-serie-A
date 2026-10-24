@@ -1,1 +1,42 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classifica</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <span>Classifica Generale</span>
+        <div>
+            <a href="hub.html">Pronostici</a>
+            <a href="classifica.html" class="active">Classifica</a>
+            <button onclick="logout()" class="btn-logout">Esci</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Top Player</h2>
+        <table class="ranking-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Player</th>
+                    <th>Punti</th>
+                </tr>
+            </thead>
+            <tbody id="ranking-body">
+                <!-- La classifica si popola via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        checkAuth();
+        loadLeaderboard();
+    </script>
+</body>
+</html>
 
