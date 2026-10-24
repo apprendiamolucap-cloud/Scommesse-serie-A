@@ -21,7 +21,6 @@ function login() {
         return;
     }
 
-    // Se sceglie Admin, controlla il codice segreto
     if (role === 'admin') {
         const code = adminCodeInput ? adminCodeInput.value.trim() : '';
         if (code !== 'jamal') {
@@ -64,7 +63,38 @@ function checkAuth() {
     }
 }
 
-// --- ADMIN: CREAZIONE E GESTIONE PARTITE ---
+function isPredictionsLocked() {
+    return localStorage.getItem('predictionsLocked') === 'true';
+}
+
+function togglePredictionsLock() {
+    let locked = isPredictionsLocked();
+    localStorage.setItem('predictionsLocked', !locked);
+    if (!locked) {
+        calculateAllPoints();
+        alert('Pronostici chiusi! I punti sono stati attivati e calcolati.');
+    } else {
+        alert('Pronostici riaperti per i player.');
+    }
+    loadAdminPanel();
+}
+
+function loadAdminPanel() {
+    loadAdminMatches();
+    const desc = document.getElementById('admin-lock-desc');
+    const btn = document.getElementById('toggle-lock-btn');
+    if (!desc || !btn) return;
+
+    if (isPredictionsLocked()) {
+        desc.innerText = "Le schedine sono CHIUSE. I player non possono più modificarle e i punteggi sono attivi.";
+        btn.innerText = "Riapri Pronostici";
+        btn.className = "";
+    } else {
+        desc.innerText = "Le schedine sono APERTE. I player possono inserire e modificare i pronostici.";
+        btn.innerText = "Chiudi Pronostici";
+        btn.className = "btn-danger";
+    }
+}
 
 function addMatch() {
     const home = document.getElementById('homeTeam').value.trim();
@@ -76,7 +106,6 @@ function addMatch() {
     }
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
-    
     matches.push({
         id: Date.now() + Math.random(),
         home: home,
@@ -114,7 +143,7 @@ function loadAdminMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita presente. Carica la giornata o aggiungine una.</p>';
+        container.innerHTML = '<p>Nessuna partita presente.</p>';
         return;
     }
 
@@ -122,12 +151,12 @@ function loadAdminMatches() {
         container.innerHTML += `
             <div class="match-box">
                 <strong>${match.home} vs ${match.away}</strong>
-                <p>Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa del risultato'}</p>
+                <p>Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa'}</p>
                 <input type="text" id="res-${match.id}" placeholder="Risultato Reale (es. 2-1)" value="${match.result || ''}">
-                <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale (es. Lautaro)" value="${match.scorer || ''}">
+                <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale" value="${match.scorer || ''}">
                 <input type="text" id="assist-${match.id}" placeholder="Assist Reale" value="${match.assist || ''}">
                 <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale" value="${match.ownGoal || ''}">
-                <button onclick="saveRealResult(${match.id})">Salva Risultato e Calcola Punti</button>
+                <button onclick="saveRealResult(${match.id})">Salva Risultato e Ricalcola</button>
             </div>
         `;
     });
@@ -152,15 +181,23 @@ function saveRealResult(matchId) {
 
     localStorage.setItem('matches', JSON.stringify(matches));
     calculateAllPoints();
-    alert('Risultato salvato e classifica aggiornata!');
+    alert('Dati salvati e punti aggiornati!');
     loadAdminMatches();
 }
 
-// --- PLAYER: HUB E PRONOSTICI ---
-
 function loadHubMatches() {
     const container = document.getElementById('matches-list');
+    const statusContainer = document.getElementById('lock-status');
     if (!container) return;
+
+    let locked = isPredictionsLocked();
+    if (statusContainer) {
+        if (locked) {
+            statusContainer.innerHTML = "<span style='color: var(--danger);'>🔒 Schedine Chiuse dall'Admin. Non puoi più modificare i pronostici.</span>";
+        } else {
+            statusContainer.innerHTML = "<span style='color: var(--primary);'>🔓 Schedine Aperte. Inserisci o modifica i tuoi pronostici.</span>";
+        }
+    }
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
@@ -169,35 +206,42 @@ function loadHubMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita disponibile al momento.</p>';
+        container.innerHTML = '<p>Nessuna partita disponibile.</p>';
         return;
     }
 
     matches.forEach(match => {
         let userPred = predictions[currentUser]?.[match.id] || { res: '', scorer: '', assist: '', ownGoal: '' };
+        let disabledAttr = locked ? 'disabled style="opacity: 0.6;"' : '';
+        let btnDisplay = locked ? 'style="display:none;"' : '';
 
         container.innerHTML += `
             <div class="match-box">
                 <h3>${match.home} vs ${match.away}</h3>
                 <label>Risultato Esatto:</label>
-                <input type="text" id="pred-res-${match.id}" value="${userPred.res}" placeholder="es. 2-1">
+                <input type="text" id="pred-res-${match.id}" value="${userPred.res}" placeholder="es. 2-1" ${disabledAttr}>
                 
                 <label>Marcatore (+2 pt):</label>
-                <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer}" placeholder="es. Lautaro">
+                <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer}" placeholder="es. Lautaro" ${disabledAttr}>
                 
                 <label>Assist (+0.5 pt):</label>
-                <input type="text" id="pred-assist-${match.id}" value="${userPred.assist}" placeholder="es. Barella">
+                <input type="text" id="pred-assist-${match.id}" value="${userPred.assist}" placeholder="es. Barella" ${disabledAttr}>
                 
                 <label>Autogol (-2 pt):</label>
-                <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal}" placeholder="es. Gatti">
+                <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal}" placeholder="es. Gatti" ${disabledAttr}>
                 
-                <button onclick="savePrediction(${match.id})">Salva Pronostico</button>
+                <button onclick="savePrediction(${match.id})" ${btnDisplay}>Salva Pronostico</button>
             </div>
         `;
     });
 }
 
 function savePrediction(matchId) {
+    if (isPredictionsLocked()) {
+        alert("Le schedine sono state chiuse dall'admin! Impossibile salvare.");
+        return;
+    }
+
     const res = document.getElementById(`pred-res-${matchId}`).value.trim();
     const scorer = document.getElementById(`pred-scorer-${matchId}`).value.trim();
     const assist = document.getElementById(`pred-assist-${matchId}`).value.trim();
@@ -213,7 +257,42 @@ function savePrediction(matchId) {
     alert('Pronostico salvato con successo!');
 }
 
-// --- CALCOLO PUNTEGGI ---
+function loadAllPlayerPredictions() {
+    const container = document.getElementById('all-predictions-list');
+    if (!container) return;
+
+    let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
+    let matches = JSON.parse(localStorage.getItem('matches')) || [];
+    let users = Object.keys(predictions);
+
+    container.innerHTML = '';
+
+    if (users.length === 0) {
+        container.innerHTML = '<p>Nessun pronostico inserito dai player finora.</p>';
+        return;
+    }
+
+    users.forEach(user => {
+        let userHtml = `<div class="card"><h3>👤 Giocatore: ${user}</h3>`;
+        let userPreds = predictions[user];
+
+        matches.forEach(match => {
+            let p = userPreds[match.id];
+            userHtml += `
+                <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+                    <strong>${match.home} vs ${match.away}</strong><br>
+                    <span>Risultato: <strong>${p ? (p.res || '-') : '-'}</strong></span> | 
+                    <span>Marcatore: <strong>${p ? (p.scorer || '-') : '-'}</strong></span> | 
+                    <span>Assist: <strong>${p ? (p.assist || '-') : '-'}</strong></span> | 
+                    <span>Autogol: <strong>${p ? (p.ownGoal || '-') : '-'}</strong></span>
+                </div>
+            `;
+        });
+
+        userHtml += `</div>`;
+        container.innerHTML += userHtml;
+    });
+}
 
 function calculateAllPoints() {
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
@@ -265,8 +344,6 @@ function calculateAllPoints() {
 
     localStorage.setItem('scores', JSON.stringify(scores));
 }
-
-// --- CLASSIFICA ---
 
 function loadLeaderboard() {
     const tbody = document.getElementById('ranking-body');
