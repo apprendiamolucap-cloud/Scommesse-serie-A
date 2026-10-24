@@ -11,7 +11,6 @@ const firebaseConfig = {
     measurementId: "G-90CQRJ2H8H"
 };
 
-// Inizializzazione Firebase
 let auth, googleProvider;
 try {
     firebase.initializeApp(firebaseConfig);
@@ -27,7 +26,6 @@ function loginWithGoogle() {
         return;
     }
 
-    // Controlla il ruolo selezionato nel form di index.html prima di aprire Google
     const roleInput = document.getElementById('role');
     const adminCodeInput = document.getElementById('admin-code');
     const selectedRole = roleInput ? roleInput.value : 'player';
@@ -45,11 +43,9 @@ function loginWithGoogle() {
             const user = result.user;
             const username = user.displayName || user.email.split('@')[0];
             
-            // Salva sessione con il ruolo scelto
             localStorage.setItem('username', username);
             localStorage.setItem('role', selectedRole);
             
-            // Inizializza o aggiorna il profilo
             let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
             if (!profiles[username]) {
                 profiles[username] = {
@@ -60,13 +56,10 @@ function loginWithGoogle() {
                     customAvatar: false
                 };
             } else if (user.photoURL && !profiles[username].customAvatar) {
-                // Se non ha impostato una foto manuale, usa la foto di Google
                 profiles[username].avatar = user.photoURL;
             }
 
             localStorage.setItem('userProfiles', JSON.stringify(profiles));
-
-            // Reindirizza alla pagina corretta in base al ruolo
             window.location.href = (selectedRole === 'admin') ? 'admin.html' : 'hub.html';
         })
         .catch((error) => {
@@ -77,14 +70,12 @@ function loginWithGoogle() {
 
 
 /* ==========================================================================
-   1. CONFIGURAZIONE LOGHI SQUADRE SERIE A & MISSIONI
+   1. LOGHI & ROSE SQUADRE SERIE A
    ========================================================================== */
 const TEAM_LOGOS = {
     "inter": "https://media.api-sports.io/football/teams/505.png",
     "milan": "https://media.api-sports.io/football/teams/489.png",
-    "mian": "https://media.api-sports.io/football/teams/489.png",
     "juventus": "https://media.api-sports.io/football/teams/496.png",
-    "juve": "https://media.api-sports.io/football/teams/496.png",
     "napoli": "https://media.api-sports.io/football/teams/492.png",
     "roma": "https://media.api-sports.io/football/teams/497.png",
     "lazio": "https://media.api-sports.io/football/teams/487.png",
@@ -95,7 +86,6 @@ const TEAM_LOGOS = {
     "udinese": "https://media.api-sports.io/football/teams/494.png",
     "monza": "https://media.api-sports.io/football/teams/1579.png",
     "verona": "https://media.api-sports.io/football/teams/504.png",
-    "hellas verona": "https://media.api-sports.io/football/teams/504.png",
     "cagliari": "https://media.api-sports.io/football/teams/490.png",
     "empoli": "https://media.api-sports.io/football/teams/511.png",
     "parma": "https://media.api-sports.io/football/teams/523.png",
@@ -108,10 +98,41 @@ const TEAM_LOGOS = {
 function getTeamLogo(teamName) {
     if (!teamName) return "https://via.placeholder.com/48?text=FC";
     const cleanName = teamName.toLowerCase().trim();
-    if (TEAM_LOGOS[cleanName]) {
-        return TEAM_LOGOS[cleanName];
-    }
+    if (TEAM_LOGOS[cleanName]) return TEAM_LOGOS[cleanName];
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=151f32&color=00e5ff&size=64&font-size=0.4`;
+}
+
+const SERIE_A_ROSTERS = {
+    "inter": ["Lautaro Martinez", "Thuram", "Taremi", "Calhanoglu", "Barella", "Mkhitaryan", "Dimarco", "Bastoni", "Pavard", "Dumfries", "Acerbi", "Sommer", "Zielinski", "Frattesi"],
+    "milan": ["Leao", "Pulisic", "Morata", "Abraham", "Loftus-Cheek", "Reijnders", "Fofana", "Theo Hernandez", "Tomori", "Calabria", "Maignan", "Okafor", "Chukwueze"],
+    "juventus": ["Vlahovic", "Yildiz", "Koopmeiners", "Nico Gonzalez", "Conceicao", "Douglas Luiz", "Locatelli", "Cambiaso", "Bremer", "Gatti", "Di Gregorio", "McKennie"],
+    "napoli": ["Lukaku", "Kvaratskhelia", "Politano", "McTominay", "Anguissa", "Lobotka", "Di Lorenzo", "Rrahmani", "Buongiorno", "Olivera", "Meret", "Raspadori", "Simeone"],
+    "roma": ["Dybala", "Dovbyk", "Soulé", "Pellegrini", "Cristante", "Koné", "Angeliño", "Mancini", "Ndicka", "Celik", "Svilar", "El Shaarawy", "Baldanzi"],
+    "lazio": ["Castellanos", "Dia", "Zaccagni", "Isaksen", "Guendouzi", "Rovella", "Vecino", "Tavares", "Romagnoli", "Gila", "Provedel", "Pedro", "Noslin"],
+    "atalanta": ["Retegui", "Lookman", "De Ketelaere", "Ederson", "De Roon", "Zappacosta", "Ruggeri", "Djimsiti", "Hien", "Carnesecchi", "Pasalic", "Zaniolo"],
+    "fiorentina": ["Kean", "Gudmundsson", "Colpani", "Bove", "Cataldi", "Mandragora", "Dodo", "Ranieri", "Comuzzo", "Gosens", "De Gea", "Beltran", "Kouamé"],
+    "bologna": ["Castro", "Dallinga", "Orsolini", "Ndoye", "Fabbian", "Freuler", "Ferguson", "Posch", "Beukema", "Lucumi", "Skorupski", "Odgaard", "Iling-Junior"],
+    "torino": ["Zapata", "Sanabria", "Adams", "Vlasic", "Ricci", "Ilic", "Lazaro", "Bellanova", "Coco", "Milinkovic-Savic", "Vojvoda"],
+    "udinese": ["Lucca", "Thauvin", "Brenner", "Lovric", "Payero", "Karlstrom", "Ehizibue", "Kamara", "Bijol", "Giannetti", "Okoye", "Davis"],
+    "lecce": ["Krstovic", "Banda", "Morente", "Rafia", "Ramadani", "Coulibaly", "Gallo", "Baschirotto", "Gaspar", "Guilbert", "Falcone", "Pierotti", "Rebic"],
+    "cagliari": ["Piccoli", "Luvumbo", "Viola", "Gaetano", "Marin", "Makoumbou", "Zappa", "Mina", "Luperto", "Augello", "Scuffet", "Pavoletti"],
+    "monza": ["Djuric", "Maldini", "Caprari", "Pessina", "Bondo", "Akpa Akpro", "Kyriakopoulos", "Pablo Marí", "Izzo", "Birindelli", "Turati", "Mota"],
+    "verona": ["Tengstedt", "Mosquera", "Suslov", "Lazovic", "Duda", "Belahyane", "Tchatchoua", "Coppola", "Magnani", "Bradaric", "Montipo"],
+    "empoli": ["Colombo", "Esposito", "Fazzini", "Henderson", "Grassi", "Anjorin", "Gyasi", "Viti", "Ismajli", "Cacace", "Vasquez"],
+    "parma": ["Bonny", "Man", "Mihaila", "Bernabe", "Sohm", "Estevez", "Valeri", "Del Prato", "Circati", "Coulibaly", "Suzuki"],
+    "genoa": ["Pinamonti", "Vitinha", "Messias", "Malinovskyi", "Badelj", "Frendrup", "Martin", "Bani", "Vogliacco", "Sabelli", "Leali"],
+    "como": ["Cutrone", "Belotti", "Strefezza", "Nico Paz", "Perrone", "Sergi Roberto", "Moreno", "Dossena", "Goldaniga", "Smolcic", "Audero"],
+    "venezia": ["Pohjanpalo", "Oristanio", "Ellertsson", "Duncan", "Nicolussi Caviglia", "Zampano", "Svoboda", "Idzes", "Candela", "Joronen"],
+    "default": ["Giocatore 1", "Giocatore 2", "Giocatore 3"]
+};
+
+function getTeamPlayers(teamName) {
+    if (!teamName) return SERIE_A_ROSTERS["default"];
+    const cleanName = teamName.toLowerCase().trim();
+    for (let key in SERIE_A_ROSTERS) {
+        if (cleanName.includes(key)) return SERIE_A_ROSTERS[key];
+    }
+    return SERIE_A_ROSTERS["default"];
 }
 
 const MISSIONS = [
@@ -122,15 +143,10 @@ const MISSIONS = [
 
 
 /* ==========================================================================
-   2. AUTENTICAZIONE, SESSIONE & PROFILI UTENTE
+   2. AUTENTICAZIONE & PROFILI UTENTE
    ========================================================================== */
-function getCurrentUser() {
-    return localStorage.getItem('username');
-}
-
-function getCurrentRole() {
-    return localStorage.getItem('role');
-}
+function getCurrentUser() { return localStorage.getItem('username'); }
+function getCurrentRole() { return localStorage.getItem('role'); }
 
 function login() {
     const usernameInput = document.getElementById('username');
@@ -138,26 +154,16 @@ function login() {
     const adminCodeInput = document.getElementById('admin-code');
     
     if (!usernameInput || !roleInput) return;
-
     const username = usernameInput.value.trim();
     const role = roleInput.value;
 
-    if (!username) {
-        alert('Inserisci un username valido!');
-        return;
-    }
-
-    if (role === 'admin') {
-        const code = adminCodeInput ? adminCodeInput.value.trim() : '';
-        if (code !== 'jamal') {
-            alert('Codice segreto Admin errato! Accesso negato.');
-            return;
-        }
+    if (!username) return alert('Inserisci un username valido!');
+    if (role === 'admin' && adminCodeInput && adminCodeInput.value.trim() !== 'jamal') {
+        return alert('Codice segreto Admin errato! Accesso negato.');
     }
 
     localStorage.setItem('username', username);
     localStorage.setItem('role', role);
-
     window.location.href = (role === 'admin') ? 'admin.html' : 'hub.html';
 }
 
@@ -169,39 +175,13 @@ function logout() {
 
 function checkAuth() {
     const user = getCurrentUser();
-    if (!user) {
-        window.location.href = 'index.html';
-        return;
-    }
+    if (!user) { window.location.href = 'index.html'; return; }
     
     const userDisplay = document.getElementById('user-display');
-    if (userDisplay) {
-        userDisplay.innerText = `👤 ${user}`;
-    }
+    if (userDisplay) userDisplay.innerText = `👤 ${user}`;
 
     const adminLink = document.getElementById('admin-link');
-    if (adminLink && getCurrentRole() === 'admin') {
-        adminLink.style.display = 'flex';
-    }
-}
-
-function toggleDeviceMode() {
-    let mode = localStorage.getItem('deviceMode') || 'mobile';
-    let newMode = mode === 'mobile' ? 'pc' : 'mobile';
-    localStorage.setItem('deviceMode', newMode);
-    applyDeviceMode();
-}
-
-function applyDeviceMode() {
-    let mode = localStorage.getItem('deviceMode') || 'mobile';
-    const btn = document.getElementById('device-btn');
-    if (mode === 'pc') {
-        document.body.classList.add('pc-mode');
-        if (btn) btn.innerText = '📱 Vista Mobile';
-    } else {
-        document.body.classList.remove('pc-mode');
-        if (btn) btn.innerText = '🖥️ Vista PC';
-    }
+    if (adminLink && getCurrentRole() === 'admin') adminLink.style.display = 'flex';
 }
 
 function getUserProfile(username) {
@@ -222,22 +202,19 @@ function getUserProfile(username) {
 function updateUserAvatar() {
     const avatarInput = document.getElementById('avatar-url-input');
     if (!avatarInput) return;
-    
     const avatarUrl = avatarInput.value.trim();
     if (!avatarUrl) return alert("Inserisci un URL immagine valido!");
 
     const currentUser = getCurrentUser();
-    if (!currentUser) return alert("Devi prima effettuare l'accesso!");
-
     let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
     let profile = getUserProfile(currentUser);
     
     profile.avatar = avatarUrl;
-    profile.customAvatar = true; // Impedisce sovrascritture automatiche da Google
+    profile.customAvatar = true;
     profiles[currentUser] = profile;
     
     localStorage.setItem('userProfiles', JSON.stringify(profiles));
-    alert("Foto profilo aggiornata con successo!");
+    alert("Foto profilo aggiornata!");
     location.reload();
 }
 
@@ -246,10 +223,7 @@ function selectNameColor(colorHex) {
     let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
     let profile = getUserProfile(currentUser);
 
-    if (!profile.unlockedColors.includes(colorHex)) {
-        return alert("Devi prima sbloccare questo colore completando la relativa missione!");
-    }
-
+    if (!profile.unlockedColors.includes(colorHex)) return alert("Colore non sbloccato!");
     profile.color = colorHex;
     profiles[currentUser] = profile;
     localStorage.setItem('userProfiles', JSON.stringify(profiles));
@@ -259,7 +233,7 @@ function selectNameColor(colorHex) {
 
 
 /* ==========================================================================
-   3. HUB PRONOSTICI & GESTIONE SCHEDINE PLAYER
+   3. HUB PRONOSTICI (CON MENU A TENDINA)
    ========================================================================== */
 function isPredictionsLocked() {
     return localStorage.getItem('predictionsLocked') === 'true';
@@ -281,18 +255,19 @@ function loadHubMatches() {
 
     if (statusContainer) {
         if (globalLocked || userHasSubmitted) {
-            statusContainer.innerHTML = "<p style='color: var(--danger); font-weight:bold;'>🔒 Schedina inviata o bloccata. Impossibile modificare i pronostici.</p>";
+            statusContainer.innerHTML = "<p style='color: var(--danger); font-weight:bold;'>🔒 Schedina inviata o bloccata. Impossibile modificare.</p>";
         } else {
-            statusContainer.innerHTML = "<p style='color: var(--primary-green); font-weight:bold;'>🔓 Schedina Aperta. Scegli il tuo MATCH JOLLY (2x Punti) e invia!</p>";
+            statusContainer.innerHTML = "<p style='color: var(--primary-green); font-weight:bold;'>🔓 Schedina Aperta. Scegli il tuo Jolly e seleziona i pronostici!</p>";
         }
     }
 
     container.innerHTML = '';
-
     if (matches.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Nessuna partita disponibile. L\'admin deve ancora caricare la giornata!</p>';
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Nessuna partita disponibile.</p>';
         return;
     }
+
+    const commonResults = ["", "0-0", "1-0", "0-1", "1-1", "2-0", "0-2", "2-1", "1-2", "2-2", "3-0", "0-3", "3-1", "1-3", "3-2", "2-3", "4-0", "0-4"];
 
     matches.forEach(match => {
         let userPred = (predictions[currentUser] && predictions[currentUser][match.id]) 
@@ -303,18 +278,26 @@ function loadHubMatches() {
         let disabledAttr = isLockedForUser ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : '';
         let isJokerChecked = userJoker == match.id ? 'checked' : '';
 
+        let matchPlayers = [...getTeamPlayers(match.home), ...getTeamPlayers(match.away)];
+
+        let resOptions = commonResults.map(r => `<option value="${r}" ${userPred.res === r ? 'selected' : ''}>${r === '' ? '-- Seleziona Risultato --' : r}</option>`).join('');
+        
+        let playerOptions = `<option value="">-- Nessuno / Seleziona --</option>`;
+        let assistOptions = `<option value="">-- Nessuno / Seleziona --</option>`;
+        let ownGoalOptions = `<option value="">-- Nessuno --</option>`;
+
+        matchPlayers.forEach(p => {
+            playerOptions += `<option value="${p}" ${userPred.scorer === p ? 'selected' : ''}>${p}</option>`;
+            assistOptions += `<option value="${p}" ${userPred.assist === p ? 'selected' : ''}>${p}</option>`;
+            ownGoalOptions += `<option value="${p}" ${userPred.ownGoal === p ? 'selected' : ''}>${p}</option>`;
+        });
+
         container.innerHTML += `
             <div class="match-box" style="${userJoker == match.id ? 'border: 2px solid #ffd700;' : ''}">
                 <div class="match-header">
-                    <div class="team-badge">
-                        <img src="${getTeamLogo(match.home)}" alt="${match.home}">
-                        <span>${match.home}</span>
-                    </div>
+                    <div class="team-badge"><img src="${getTeamLogo(match.home)}" alt="${match.home}"><span>${match.home}</span></div>
                     <div class="vs-divider">VS</div>
-                    <div class="team-badge">
-                        <img src="${getTeamLogo(match.away)}" alt="${match.away}">
-                        <span>${match.away}</span>
-                    </div>
+                    <div class="team-badge"><img src="${getTeamLogo(match.away)}" alt="${match.away}"><span>${match.away}</span></div>
                 </div>
 
                 <div style="background:#0d1424; padding:8px 12px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
@@ -322,32 +305,28 @@ function loadHubMatches() {
                     <input type="radio" name="jokerMatch" value="${match.id}" ${isJokerChecked} ${disabledAttr} style="width:auto; margin:0;">
                 </div>
 
-                <label>Risultato Esatto (es. 2-1):</label>
-                <input type="text" id="pred-res-${match.id}" value="${userPred.res || ''}" placeholder="es. 2-1" ${disabledAttr}>
+                <label>Risultato Esatto:</label>
+                <select id="pred-res-${match.id}" ${disabledAttr}>${resOptions}</select>
                 
                 <label>Marcatore (+2 pt):</label>
-                <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer || ''}" placeholder="es. Lautaro" ${disabledAttr}>
+                <select id="pred-scorer-${match.id}" ${disabledAttr}>${playerOptions}</select>
                 
                 <label>Assist (+0.5 pt):</label>
-                <input type="text" id="pred-assist-${match.id}" value="${userPred.assist || ''}" placeholder="es. Barella" ${disabledAttr}>
+                <select id="pred-assist-${match.id}" ${disabledAttr}>${assistOptions}</select>
                 
                 <label>Autogol (-2 pt):</label>
-                <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal || ''}" placeholder="es. Gatti" ${disabledAttr}>
+                <select id="pred-owngoal-${match.id}" ${disabledAttr}>${ownGoalOptions}</select>
             </div>
         `;
     });
 
     if (!globalLocked && !userHasSubmitted) {
-        container.innerHTML += `
-            <div style="margin-top:20px;">
-                <button onclick="submitAllPredictions()">🚀 Invia e Blocca Schedina</button>
-            </div>
-        `;
+        container.innerHTML += `<div style="margin-top:20px;"><button onclick="submitAllPredictions()">🚀 Invia e Blocca Schedina</button></div>`;
     }
 }
 
 function submitAllPredictions() {
-    if (isPredictionsLocked()) return alert("Le schedine sono state chiuse dall'admin!");
+    if (isPredictionsLocked()) return alert("Schedine chiuse!");
 
     const currentUser = getCurrentUser();
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
@@ -363,16 +342,11 @@ function submitAllPredictions() {
     if (!predictions[currentUser]) predictions[currentUser] = {};
 
     matches.forEach(match => {
-        const resInput = document.getElementById(`pred-res-${match.id}`);
-        const scorerInput = document.getElementById(`pred-scorer-${match.id}`);
-        const assistInput = document.getElementById(`pred-assist-${match.id}`);
-        const ownGoalInput = document.getElementById(`pred-owngoal-${match.id}`);
-
         predictions[currentUser][match.id] = {
-            res: resInput ? resInput.value.trim() : '',
-            scorer: scorerInput ? scorerInput.value.trim() : '',
-            assist: assistInput ? assistInput.value.trim() : '',
-            ownGoal: ownGoalInput ? ownGoalInput.value.trim() : ''
+            res: document.getElementById(`pred-res-${match.id}`).value,
+            scorer: document.getElementById(`pred-scorer-${match.id}`).value,
+            assist: document.getElementById(`pred-assist-${match.id}`).value,
+            ownGoal: document.getElementById(`pred-owngoal-${match.id}`).value
         };
     });
 
@@ -391,36 +365,16 @@ function loadAllPlayerPredictions() {
     let users = Object.keys(predictions);
 
     container.innerHTML = '';
-
-    if (users.length === 0) {
-        container.innerHTML = '<p>Nessun pronostico registrato finora.</p>';
-        return;
-    }
+    if (users.length === 0) { container.innerHTML = '<p>Nessun pronostico registrato.</p>'; return; }
 
     users.forEach(user => {
         let userProfile = getUserProfile(user);
-        let userHtml = `<div class="card">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                <img src="${userProfile.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">
-                <h3 style="margin:0; color:${userProfile.color};">Player: ${user}</h3>
-            </div>`;
+        let userHtml = `<div class="card"><div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;"><img src="${userProfile.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;"><h3 style="margin:0; color:${userProfile.color};">Player: ${user}</h3></div>`;
             
-        let userPreds = predictions[user];
-
         matches.forEach(match => {
-            let p = userPreds[match.id];
-            userHtml += `
-                <div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border);">
-                    <strong>${match.home} vs ${match.away}</strong><br>
-                    <span style="font-size:0.85rem; color:var(--text-muted);">
-                        Risultato: <strong style="color:var(--primary-cyan);">${p ? (p.res || '-') : '-'}</strong> | 
-                        Marcatore: <strong>${p ? (p.scorer || '-') : '-'}</strong> | 
-                        Assist: <strong>${p ? (p.assist || '-') : '-'}</strong>
-                    </span>
-                </div>
-            `;
+            let p = predictions[user][match.id];
+            userHtml += `<div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border);"><strong>${match.home} vs ${match.away}</strong><br><span style="font-size:0.85rem; color:var(--text-muted);">Risultato: <strong style="color:var(--primary-cyan);">${p ? (p.res || '-') : '-'}</strong> | Marcatore: <strong>${p ? (p.scorer || '-') : '-'}</strong> | Assist: <strong>${p ? (p.assist || '-') : '-'}</strong></span></div>`;
         });
-
         userHtml += `</div>`;
         container.innerHTML += userHtml;
     });
@@ -428,17 +382,13 @@ function loadAllPlayerPredictions() {
 
 
 /* ==========================================================================
-   4. PANNELLO ADMIN & GESTIONE PARTITE
+   4. PANNELLO ADMIN (CON MENU A TENDINA)
    ========================================================================== */
 function togglePredictionsLock() {
     let locked = isPredictionsLocked();
     localStorage.setItem('predictionsLocked', !locked);
-    if (!locked) {
-        calculateAllPoints();
-        alert('Pronostici chiusi per tutti! I punti sono stati calcolati.');
-    } else {
-        alert('Pronostici riaperti per i player.');
-    }
+    if (!locked) { calculateAllPoints(); alert('Pronostici chiusi e punti calcolati.'); }
+    else { alert('Pronostici riaperti.'); }
     loadAdminPanel();
 }
 
@@ -453,7 +403,7 @@ function loadAdminPanel() {
         btn.innerText = "Riapri Pronostici";
         btn.className = "";
     } else {
-        desc.innerText = "Le schedine sono APERTE (ogni player le blocca inviandole).";
+        desc.innerText = "Le schedine sono APERTE.";
         btn.innerText = "Chiudi Pronostici Tutti";
         btn.className = "btn-danger";
     }
@@ -462,27 +412,13 @@ function loadAdminPanel() {
 function addMatch() {
     const home = document.getElementById('homeTeam').value.trim();
     const away = document.getElementById('awayTeam').value.trim();
-
-    if (!home || !away) {
-        alert('Inserisci entrambe le squadre!');
-        return;
-    }
+    if (!home || !away) return alert('Inserisci entrambe le squadre!');
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
-    matches.push({
-        id: Date.now(),
-        home: home,
-        away: away,
-        result: null,
-        scorer: null,
-        assist: null,
-        ownGoal: null
-    });
-
+    matches.push({ id: Date.now(), home, away, result: null, scorer: null, assist: null, ownGoal: null });
     localStorage.setItem('matches', JSON.stringify(matches));
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
-    alert('Partita creata e salvata con successo!');
     loadAdminMatches();
 }
 
@@ -493,9 +429,7 @@ function loadSampleSerieAMatches() {
         { id: 103, home: "Roma", away: "Lazio", result: null, scorer: null, assist: null, ownGoal: null },
         { id: 104, home: "Atalanta", away: "Fiorentina", result: null, scorer: null, assist: null, ownGoal: null }
     ];
-
     localStorage.setItem('matches', JSON.stringify(sampleMatches));
-    alert('Giornata di Serie A caricata con successo!');
     loadAdminMatches();
 }
 
@@ -505,33 +439,41 @@ function loadAdminMatches() {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     container.innerHTML = '';
+    if (matches.length === 0) { container.innerHTML = '<p>Nessuna partita presente.</p>'; return; }
 
-    if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita presente.</p>';
-        return;
-    }
+    const commonResults = ["", "0-0", "1-0", "0-1", "1-1", "2-0", "0-2", "2-1", "1-2", "2-2", "3-0", "0-3", "3-1", "1-3", "3-2", "2-3", "4-0", "0-4"];
 
     matches.forEach(match => {
+        let matchPlayers = [...getTeamPlayers(match.home), ...getTeamPlayers(match.away)];
+        let resOpts = commonResults.map(r => `<option value="${r}" ${match.result === r ? 'selected' : ''}>${r === '' ? '-- Risultato Reale --' : r}</option>`).join('');
+        
+        let pOpts = `<option value="">-- Marcatore Reale --</option>`;
+        let aOpts = `<option value="">-- Assist Reale --</option>`;
+        let ogOpts = `<option value="">-- Autogol Reale --</option>`;
+
+        matchPlayers.forEach(p => {
+            pOpts += `<option value="${p}" ${match.scorer === p ? 'selected' : ''}>${p}</option>`;
+            aOpts += `<option value="${p}" ${match.assist === p ? 'selected' : ''}>${p}</option>`;
+            ogOpts += `<option value="${p}" ${match.ownGoal === p ? 'selected' : ''}>${p}</option>`;
+        });
+
         container.innerHTML += `
             <div class="match-box">
                 <div class="match-header">
-                    <div class="team-badge">
-                        <img src="${getTeamLogo(match.home)}" alt="${match.home}">
-                        <span>${match.home}</span>
-                    </div>
+                    <div class="team-badge"><img src="${getTeamLogo(match.home)}" alt="${match.home}"><span>${match.home}</span></div>
                     <div class="vs-divider">VS</div>
-                    <div class="team-badge">
-                        <img src="${getTeamLogo(match.away)}" alt="${match.away}">
-                        <span>${match.away}</span>
-                    </div>
+                    <div class="team-badge"><img src="${getTeamLogo(match.away)}" alt="${match.away}"><span>${match.away}</span></div>
                 </div>
-                <p style="text-align:center;">Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa'}</p>
-                <input type="text" id="res-${match.id}" placeholder="Risultato Reale (es. 2-1)" value="${match.result || ''}">
-                <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale" value="${match.scorer || ''}">
-                <input type="text" id="assist-${match.id}" placeholder="Assist Reale" value="${match.assist || ''}">
-                <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale" value="${match.ownGoal || ''}">
+                <label>Risultato Reale:</label>
+                <select id="res-${match.id}">${resOpts}</select>
+                <label>Marcatore Reale:</label>
+                <select id="scorer-${match.id}">${pOpts}</select>
+                <label>Assist Reale:</label>
+                <select id="assist-${match.id}">${aOpts}</select>
+                <label>Autogol Reale:</label>
+                <select id="owngoal-${match.id}">${ogOpts}</select>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="saveRealResult(${match.id})">Salva e Ricalcola Punti</button>
+                    <button onclick="saveRealResult(${match.id})">Salva e Ricalcola</button>
                     <button class="btn-danger" onclick="deleteMatch(${match.id})" style="width: auto;">Elimina</button>
                 </div>
             </div>
@@ -540,30 +482,24 @@ function loadAdminMatches() {
 }
 
 function saveRealResult(matchId) {
-    const res = document.getElementById(`res-${matchId}`).value.trim();
-    const scorer = document.getElementById(`scorer-${matchId}`).value.trim();
-    const assist = document.getElementById(`assist-${matchId}`).value.trim();
-    const ownGoal = document.getElementById(`owngoal-${matchId}`).value.trim();
-
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.map(m => {
         if (m.id == matchId) {
-            m.result = res;
-            m.scorer = scorer;
-            m.assist = assist;
-            m.ownGoal = ownGoal;
+            m.result = document.getElementById(`res-${matchId}`).value;
+            m.scorer = document.getElementById(`scorer-${matchId}`).value;
+            m.assist = document.getElementById(`assist-${matchId}`).value;
+            m.ownGoal = document.getElementById(`owngoal-${matchId}`).value;
         }
         return m;
     });
-
     localStorage.setItem('matches', JSON.stringify(matches));
     calculateAllPoints();
-    alert('Risultato reale salvato e punti aggiornati!');
+    alert('Risultati salvati e punti aggiornati!');
     loadAdminMatches();
 }
 
 function deleteMatch(matchId) {
-    if (!confirm("Eliminare questa partita?")) return;
+    if (!confirm("Eliminare?")) return;
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.filter(m => m.id != matchId);
     localStorage.setItem('matches', JSON.stringify(matches));
@@ -573,13 +509,12 @@ function deleteMatch(matchId) {
 
 
 /* ==========================================================================
-   5. CLASSIFICA, PUNTEGGI & MISSIONI
+   5. CLASSIFICA & MISSIONI
    ========================================================================== */
 function checkAndRewardMissions(username, actionType) {
     let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
     let profile = getUserProfile(username);
     let scores = JSON.parse(localStorage.getItem('scores')) || {};
-
     let unlocked = false;
 
     if (actionType === 'submit_schedina' && !profile.completedMissions.includes('submit_schedina')) {
@@ -587,20 +522,17 @@ function checkAndRewardMissions(username, actionType) {
         profile.unlockedColors.push('#00e5ff');
         unlocked = true;
     }
-
     let jokers = JSON.parse(localStorage.getItem('jokers')) || {};
     if (jokers[username] && !profile.completedMissions.includes('use_joker')) {
         profile.completedMissions.push('use_joker');
         profile.unlockedColors.push('#00e676');
         unlocked = true;
     }
-
     if ((scores[username] || 0) >= 10 && !profile.completedMissions.includes('top_scorer')) {
         profile.completedMissions.push('top_scorer');
         profile.unlockedColors.push('#ffd700');
         unlocked = true;
     }
-
     if (unlocked) {
         profiles[username] = profile;
         localStorage.setItem('userProfiles', JSON.stringify(profiles));
@@ -620,46 +552,29 @@ function calculateAllPoints() {
 
         matches.forEach(match => {
             if (!match.result) return; 
-
             let pred = userMatches[match.id];
             if (!pred) return;
 
             let matchPoints = 0;
-            let realRes = match.result; 
-            let userRes = pred.res;       
-
-            if (userRes === realRes && realRes !== "") {
+            if (pred.res === match.result && match.result !== "") {
                 matchPoints += 3;
-            } else if (userRes && realRes) {
-                let [rHome, rAway] = realRes.split('-').map(Number);
-                let [uHome, uAway] = userRes.split('-').map(Number);
-                if (!isNaN(rHome) && !isNaN(uHome) && !isNaN(rAway) && !isNaN(uAway)) {
-                    if (Math.sign(rHome - rAway) === Math.sign(uHome - uAway)) {
-                        matchPoints += 1;
-                    }
+            } else if (pred.res && match.result) {
+                let [rHome, rAway] = match.result.split('-').map(Number);
+                let [uHome, uAway] = pred.res.split('-').map(Number);
+                if (!isNaN(rHome) && !isNaN(uHome) && Math.sign(rHome - rAway) === Math.sign(uHome - uAway)) {
+                    matchPoints += 1;
                 }
             }
 
-            if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
-                matchPoints += 2;
-            }
-            if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
-                matchPoints += 0.5;
-            }
-            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
-                matchPoints -= 2;
-            }
+            if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) matchPoints += 2;
+            if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) matchPoints += 0.5;
+            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) matchPoints -= 2;
 
-            if (userJokerMatchId == match.id) {
-                matchPoints *= 2;
-            }
-
+            if (userJokerMatchId == match.id) matchPoints *= 2;
             scores[user] += matchPoints;
         });
-
         checkAndRewardMissions(user, 'score_update');
     });
-
     localStorage.setItem('scores', JSON.stringify(scores));
 }
 
@@ -671,11 +586,7 @@ function loadLeaderboard() {
     let sortedUsers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
 
     tbody.innerHTML = '';
-
-    if (sortedUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio registrato.</td></tr>';
-        return;
-    }
+    if (sortedUsers.length === 0) { tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio.</td></tr>'; return; }
 
     sortedUsers.forEach((user, index) => {
         let userProfile = getUserProfile(user);
@@ -693,8 +604,8 @@ function loadLeaderboard() {
 }
 
 function resetLeaderboard() {
-    if (!confirm("Sei sicuro di voler azzerare la classifica generale?")) return;
+    if (!confirm("Azzerare la classifica?")) return;
     localStorage.removeItem('scores');
-    alert('Classifica azzerata con successo!');
+    alert('Classifica azzerata!');
     loadLeaderboard();
 }
