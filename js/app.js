@@ -1,23 +1,41 @@
-// --- LOGHI SQUADRE SERIE A AUTOMATICI ---
+// --- LOGHI SQUADRE SERIE A (API Affidabile + Mappatura Flessibile) ---
 const TEAM_LOGOS = {
-    "inter": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
-    "milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
-    "juventus": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%28.svg",
-    "napoli": "https://upload.wikimedia.org/wikipedia/commons/2/28/SSC_Napoli_2020.svg",
-    "roma": "https://upload.wikimedia.org/wikipedia/commons/f/f7/AS_Roma_logo_%282017%29.svg",
-    "lazio": "https://upload.wikimedia.org/wikipedia/commons/7/76/S.S._Lazio_logo.svg",
-    "atalanta": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Atalanta_BC_logo.svg",
-    "fiorentina": "https://upload.wikimedia.org/wikipedia/commons/7/79/ACF_Fiorentina_2022.svg",
-    "bologna": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Bologna_fc_badge.svg",
-    "torino": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Torino_FC_Logo.svg"
+    "inter": "https://media.api-sports.io/football/teams/505.png",
+    "milan": "https://media.api-sports.io/football/teams/489.png",
+    "mian": "https://media.api-sports.io/football/teams/489.png", // Correzione automatica per errore di battitura "mian"
+    "juventus": "https://media.api-sports.io/football/teams/496.png",
+    "juve": "https://media.api-sports.io/football/teams/496.png",
+    "napoli": "https://media.api-sports.io/football/teams/492.png",
+    "roma": "https://media.api-sports.io/football/teams/497.png",
+    "lazio": "https://media.api-sports.io/football/teams/487.png",
+    "atalanta": "https://media.api-sports.io/football/teams/499.png",
+    "fiorentina": "https://media.api-sports.io/football/teams/502.png",
+    "bologna": "https://media.api-sports.io/football/teams/500.png",
+    "torino": "https://media.api-sports.io/football/teams/503.png",
+    "udinese": "https://media.api-sports.io/football/teams/494.png",
+    "monza": "https://media.api-sports.io/football/teams/1579.png",
+    "verona": "https://media.api-sports.io/football/teams/504.png",
+    "hellas verona": "https://media.api-sports.io/football/teams/504.png",
+    "cagliari": "https://media.api-sports.io/football/teams/490.png",
+    "empoli": "https://media.api-sports.io/football/teams/511.png",
+    "parma": "https://media.api-sports.io/football/teams/523.png",
+    "genoa": "https://media.api-sports.io/football/teams/495.png",
+    "como": "https://media.api-sports.io/football/teams/1580.png",
+    "venezia": "https://media.api-sports.io/football/teams/517.png",
+    "lecce": "https://media.api-sports.io/football/teams/889.png"
 };
 
 function getTeamLogo(teamName) {
     if (!teamName) return "https://via.placeholder.com/48?text=FC";
     const cleanName = teamName.toLowerCase().trim();
-    return TEAM_LOGOS[cleanName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=151f32&color=00e5ff&size=64&font-size=0.4`;
+    
+    // Se la squadra è nella mappa usa l'immagine CDN, altrimenti genera uno stemma dinamico con le prime lettere
+    if (TEAM_LOGOS[cleanName]) {
+        return TEAM_LOGOS[cleanName];
+    }
+    
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=151f32&color=00e5ff&size=64&font-size=0.4`;
 }
-
 // --- SELETTORE VISTA MOBILE / PC ---
 function toggleDeviceMode() {
     let mode = localStorage.getItem('deviceMode') || 'mobile';
