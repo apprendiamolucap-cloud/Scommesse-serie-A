@@ -13,32 +13,43 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
     <div class="navbar">
-        <h2 style="margin: 0; color: var(--primary-cyan);">👥 Community</h2>
-        <div class="nav-links">
-            <a href="hub.html">Hub Schedina</a>
-            <a href="community.html" class="active">Community</a>
-            <a href="classifica.html">Classifica</a>
-            <a href="profili.html">Profilo</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">Admin</a>
-            <button id="device-btn" onclick="toggleDeviceMode()" style="width: auto; padding: 6px 10px; font-size: 0.8rem; background: #1f293d; color: var(--primary-cyan);">📱 Vista Tel</button>
-            <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
+        <div class="nav-brand">
+            <h2 style="margin: 0; color: var(--primary-cyan); font-size: 1.15rem;">👥 Community</h2>
+        </div>
+
+        <div class="nav-controls">
+            <a href="https://www.legaseriea.it" target="_blank" class="seriea-logo-container" title="Vai al sito Serie A">
+                SERIE A
+            </a>
+            <button class="hamburger-btn" onclick="toggleNavMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="nav-links" id="nav-menu">
+            <a href="hub.html">🏠 Hub Schedina</a>
+            <a href="community.html" class="active">👥 Community</a>
+            <a href="classifica.html">🏆 Classifica</a>
+            <a href="profili.html">👤 Profilo</a>
+            <a href="https://discord.gg/Gmn6zE942" target="_blank" style="color: #5865F2;">💬 Server Discord</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">⚙️ Pannello Admin</a>
+            <a href="#" onclick="logout()" style="color: #ef4444;">🚪 Esci</a>
         </div>
     </div>
 
     <div style="text-align: center; margin-bottom: 15px;">
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Confronta i pronostici inviati da tutti gli altri giocatori della lega:</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Confronta i pronostici inviati dagli altri giocatori:</p>
     </div>
 
-    <!-- Contenitore delle schedine inviate da tutti i player -->
     <div id="all-predictions-list"></div>
 
     <script src="js/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
-            applyDeviceMode();
             loadAllPlayerPredictions();
         });
     </script>
