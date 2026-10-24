@@ -3,30 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Gestione Partite</title>
+    <title>Admin - Gestione</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <nav>
         <span>Pannello Admin</span>
         <div>
-            <a href="hub.html">Torna all'Hub</a>
+            <a href="hub.html">Hub Pronostici</a>
             <a href="classifica.html">Classifica</a>
             <button onclick="logout()" class="btn-logout">Esci</button>
         </div>
     </nav>
 
     <div class="container">
-        <h2>Aggiungi Nuova Partita</h2>
+        <h2>Gestione Partite</h2>
         <div class="card">
+            <h3>Aggiungi Partita Manuale</h3>
             <input type="text" id="homeTeam" placeholder="Squadra Casa (es. Inter)">
             <input type="text" id="awayTeam" placeholder="Squadra Ospite (es. Milan)">
             <button onclick="addMatch()">Crea Partita Singola</button>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
-            <button onclick="loadSampleSerieAMatches()" style="background-color: #28a745; color: white;">⚡ Carica Giornata Serie A (Top Match)</button>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+            <button onclick="loadSampleSerieAMatches()" style="background-color: #38bdf8; color: #0f172a;">⚡ Carica Giornata Serie A (Top Match)</button>
         </div>
 
-        <h2>Partite Create (Inserisci Risultato Reale)</h2>
+        <h2>Inserisci Risultati Reali & Eventi</h2>
         <div id="admin-matches-list"></div>
     </div>
 
@@ -34,7 +35,7 @@
     <script>
         checkAuth();
         if (getCurrentRole() !== 'admin') {
-            alert('Accesso negato! Solo gli admin possono accedere a questa pagina.');
+            alert('Accesso negato! Solo gli admin possono accedere.');
             window.location.href = 'hub.html';
         }
         loadAdminMatches();
