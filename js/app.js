@@ -156,7 +156,10 @@ function loadAdminMatches() {
                 <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale" value="${match.scorer || ''}">
                 <input type="text" id="assist-${match.id}" placeholder="Assist Reale" value="${match.assist || ''}">
                 <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale" value="${match.ownGoal || ''}">
-                <button onclick="saveRealResult(${match.id})">Salva Risultato e Ricalcola</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="saveRealResult(${match.id})">Salva Risultato e Ricalcola</button>
+                    <button class="btn-danger" onclick="deleteMatch(${match.id})" style="width: auto;">Elimina Partita</button>
+                </div>
             </div>
         `;
     });
@@ -182,6 +185,17 @@ function saveRealResult(matchId) {
     localStorage.setItem('matches', JSON.stringify(matches));
     calculateAllPoints();
     alert('Dati salvati e punti aggiornati!');
+    loadAdminMatches();
+}
+
+function deleteMatch(matchId) {
+    if (!confirm("Sei sicuro di voler eliminare questa partita dall'elenco?")) return;
+
+    let matches = JSON.parse(localStorage.getItem('matches')) || [];
+    matches = matches.filter(m => m.id != matchId);
+    localStorage.setItem('matches', JSON.stringify(matches));
+
+    calculateAllPoints();
     loadAdminMatches();
 }
 
@@ -230,7 +244,10 @@ function loadHubMatches() {
                 <label>Autogol (-2 pt):</label>
                 <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal}" placeholder="es. Gatti" ${disabledAttr}>
                 
-                <button onclick="savePrediction(${match.id})" ${btnDisplay}>Salva Pronostico</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px; ${btnDisplay}">
+                    <button onclick="savePrediction(${match.id})">Salva Pronostico</button>
+                    <button class="btn-danger" onclick="deletePrediction(${match.id})" style="width: auto;">Cancella Pronostico</button>
+                </div>
             </div>
         `;
     });
@@ -244,7 +261,7 @@ function savePrediction(matchId) {
 
     const res = document.getElementById(`pred-res-${matchId}`).value.trim();
     const scorer = document.getElementById(`pred-scorer-${matchId}`).value.trim();
-    const assist = document.getElementById(`pred-assist-${matchId}`).value.trim();
+    const assist = document.getElementById(`assist-${matchId}`).value.trim();
     const ownGoal = document.getElementById(`pred-owngoal-${matchId}`).value.trim();
     const currentUser = getCurrentUser();
 
@@ -255,6 +272,26 @@ function savePrediction(matchId) {
     localStorage.setItem('predictions', JSON.stringify(predictions));
     
     alert('Pronostico salvato con successo!');
+}
+
+// CANCELLAZIONE SINGOLO PRONOSTICO PER IL PLAYER
+function deletePrediction(matchId) {
+    if (isPredictionsLocked()) {
+        alert("Le schedine sono chiuse! Impossibile cancellare.");
+        return;
+    }
+
+    const currentUser = getCurrentUser();
+    let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
+
+    if (predictions[currentUser] && predictions[currentUser][matchId]) {
+        delete predictions[currentUser][matchId];
+        localStorage.setItem('predictions', JSON.stringify(predictions));
+        alert('Pronostico rimosso per questa partita!');
+        loadHubMatches();
+    } else {
+        alert('Nessun pronostico presente da cancellare.');
+    }
 }
 
 function loadAllPlayerPredictions() {
