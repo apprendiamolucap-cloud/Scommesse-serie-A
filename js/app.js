@@ -1,5 +1,3 @@
-// --- GESTIONE UTENTE E AUTENTICAZIONE ---
-
 function getCurrentUser() {
     return localStorage.getItem('username');
 }
@@ -9,8 +7,13 @@ function getCurrentRole() {
 }
 
 function login() {
-    const username = document.getElementById('username').value.trim();
-    const role = document.getElementById('role').value;
+    const usernameInput = document.getElementById('username');
+    const roleInput = document.getElementById('role');
+    
+    if (!usernameInput || !roleInput) return;
+
+    const username = usernameInput.value.trim();
+    const role = roleInput.value;
 
     if (!username) {
         alert('Inserisci un username valido!');
@@ -42,7 +45,7 @@ function checkAuth() {
     
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
-        userDisplay.innerText = `Utente: ${user} (${getCurrentRole()})`;
+        userDisplay.innerText = `👤 ${user} (${getCurrentRole()})`;
     }
 
     const adminLink = document.getElementById('admin-link');
@@ -51,8 +54,7 @@ function checkAuth() {
     }
 }
 
-
-// --- FUNZIONI ADMIN (CREAZIONE E GESTIONE PARTITE) ---
+// --- ADMIN: CREAZIONE E GESTIONE PARTITE ---
 
 function addMatch() {
     const home = document.getElementById('homeTeam').value.trim();
@@ -65,38 +67,30 @@ function addMatch() {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     
-    const newMatch = {
-        id: Date.now() + Math.random(), // ID univoco sicuro
+    matches.push({
+        id: Date.now() + Math.random(),
         home: home,
         away: away,
-        result: null, 
-        scorer: null,  
-        assist: null,  
-        ownGoal: null  
-    };
+        result: null,
+        scorer: null,
+        assist: null,
+        ownGoal: null
+    });
 
-    matches.push(newMatch);
     localStorage.setItem('matches', JSON.stringify(matches));
-    
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
-    
     loadAdminMatches();
 }
 
-// Funzione per caricare automaticamente una finta/intera giornata di Serie A con un click
 function loadSampleSerieAMatches() {
     const sampleMatches = [
         { id: 101, home: "Inter", away: "Milan", result: null, scorer: null, assist: null, ownGoal: null },
         { id: 102, home: "Juventus", away: "Napoli", result: null, scorer: null, assist: null, ownGoal: null },
         { id: 103, home: "Roma", away: "Lazio", result: null, scorer: null, assist: null, ownGoal: null },
-        { id: 104, home: "Atalanta", away: "Fiorentina", result: null, scorer: null, assist: null, ownGoal: null },
-        { id: 105, home: "Bologna", away: "Torino", result: null, scorer: null, assist: null, ownGoal: null }
+        { id: 104, home: "Atalanta", away: "Fiorentina", result: null, scorer: null, assist: null, ownGoal: null }
     ];
 
-    let matches = JSON.parse(localStorage.getItem('matches')) || [];
-    
-    // Evita i duplicati unendo o sostituendo
     localStorage.setItem('matches', JSON.stringify(sampleMatches));
     alert('Giornata di Serie A caricata con successo!');
     loadAdminMatches();
@@ -110,7 +104,7 @@ function loadAdminMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita inserita. Usa il pulsante sopra per caricare la giornata di Serie A o creane una manualmente.</p>';
+        container.innerHTML = '<p>Nessuna partita presente. Carica la giornata o aggiungine una.</p>';
         return;
     }
 
@@ -121,8 +115,8 @@ function loadAdminMatches() {
                 <p>Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa del risultato'}</p>
                 <input type="text" id="res-${match.id}" placeholder="Risultato Reale (es. 2-1)" value="${match.result || ''}">
                 <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale (es. Lautaro)" value="${match.scorer || ''}">
-                <input type="text" id="assist-${match.id}" placeholder="Assistman Reale (es. Barella)" value="${match.assist || ''}">
-                <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale (es. Gatti)" value="${match.ownGoal || ''}">
+                <input type="text" id="assist-${match.id}" placeholder="Assist Reale" value="${match.assist || ''}">
+                <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale" value="${match.ownGoal || ''}">
                 <button onclick="saveRealResult(${match.id})">Salva Risultato e Calcola Punti</button>
             </div>
         `;
@@ -148,12 +142,11 @@ function saveRealResult(matchId) {
 
     localStorage.setItem('matches', JSON.stringify(matches));
     calculateAllPoints();
-    alert('Risultato salvato e punti ricalcolati per tutti i player!');
+    alert('Risultato salvato e classifica aggiornata!');
     loadAdminMatches();
 }
 
-
-// --- FUNZIONI PLAYER (HUB E PRONOSTICI) ---
+// --- PLAYER: HUB E PRONOSTICI ---
 
 function loadHubMatches() {
     const container = document.getElementById('matches-list');
@@ -166,7 +159,7 @@ function loadHubMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita disponibile per questa giornata.</p>';
+        container.innerHTML = '<p>Nessuna partita disponibile al momento.</p>';
         return;
     }
 
@@ -176,16 +169,16 @@ function loadHubMatches() {
         container.innerHTML += `
             <div class="match-box">
                 <h3>${match.home} vs ${match.away}</h3>
-                <label>Risultato Esatto (es. 2-1):</label>
+                <label>Risultato Esatto:</label>
                 <input type="text" id="pred-res-${match.id}" value="${userPred.res}" placeholder="es. 2-1">
                 
-                <label>Marcatore Scelto (+2 pt):</label>
+                <label>Marcatore (+2 pt):</label>
                 <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer}" placeholder="es. Lautaro">
                 
-                <label>Assistman Scelto (+0.5 pt):</label>
+                <label>Assist (+0.5 pt):</label>
                 <input type="text" id="pred-assist-${match.id}" value="${userPred.assist}" placeholder="es. Barella">
                 
-                <label>Autogol Previsto (-2 pt):</label>
+                <label>Autogol (-2 pt):</label>
                 <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal}" placeholder="es. Gatti">
                 
                 <button onclick="savePrediction(${match.id})">Salva Pronostico</button>
@@ -202,10 +195,7 @@ function savePrediction(matchId) {
     const currentUser = getCurrentUser();
 
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
-
-    if (!predictions[currentUser]) {
-        predictions[currentUser] = {};
-    }
+    if (!predictions[currentUser]) predictions[currentUser] = {};
 
     predictions[currentUser][matchId] = { res, scorer, assist, ownGoal };
     localStorage.setItem('predictions', JSON.stringify(predictions));
@@ -213,8 +203,7 @@ function savePrediction(matchId) {
     alert('Pronostico salvato con successo!');
 }
 
-
-// --- ALGORITMO DI CALCOLO PUNTEGGI ---
+// --- CALCOLO PUNTEGGI ESATTO SECONDO LE TUE REGOLE ---
 
 function calculateAllPoints() {
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
@@ -234,7 +223,7 @@ function calculateAllPoints() {
             let realRes = match.result; 
             let userRes = pred.res;       
 
-            // 1. Risultato Esatto (+3 pt) o Segno Vincitrice (+1 pt)
+            // 1. Risultato Esatto = 3 punti / Squadra vincitrice presa (senza ris. esatto) = 1 punto
             if (userRes === realRes && realRes !== "") {
                 scores[user] += 3;
             } else if (userRes && realRes) {
@@ -246,22 +235,22 @@ function calculateAllPoints() {
                     let userWinner = Math.sign(uHome - uAway);
 
                     if (realWinner === userWinner) {
-                        scores[user] += 1; // Squadra vincente presa
+                        scores[user] += 1; // Squadra vincitrice presa
                     }
                 }
             }
 
-            // 2. Marcatore (+2 pt)
+            // 2. Marcatore = 2 punti
             if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
                 scores[user] += 2;
             }
 
-            // 3. Assist (+0.5 pt)
+            // 3. Assist = 0.5 punti
             if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
                 scores[user] += 0.5;
             }
 
-            // 4. Autogol (-2 pt)
+            // 4. Autogol = -2 punti
             if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
                 scores[user] -= 2;
             }
@@ -271,8 +260,7 @@ function calculateAllPoints() {
     localStorage.setItem('scores', JSON.stringify(scores));
 }
 
-
-// --- CARICAMENTO CLASSIFICA ---
+// --- CLASSIFICA ---
 
 function loadLeaderboard() {
     const tbody = document.getElementById('ranking-body');
@@ -284,7 +272,7 @@ function loadLeaderboard() {
     tbody.innerHTML = '';
 
     if (sortedUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio ancora registrato.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio registrato.</td></tr>';
         return;
     }
 
