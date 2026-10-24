@@ -3,73 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SantosPredictor - Admin</title>
+    <title>SantosPredictor - Pannello Admin</title>
+
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="brand-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg" alt="Serie A" class="seriea-logo">
-            <span class="brand-title">⚙️ Admin Panel</span>
-        </div>
-        <div class="top-nav-links">
-            <a href="hub.html">Pronostici</a>
-            <a href="profili.html">Profili & Schedine</a>
-            <a href="classifica.html">Classifica</a>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h2 style="margin: 0; color: #ff5252;">⚙️ Admin Panel</h2>
+        <div class="nav-links">
+            <a href="hub.html">Hub Schedina</a>
             <a href="community.html">Community</a>
+            <a href="classifica.html">Classifica</a>
+            <a href="profili.html">Profilo</a>
+            <a href="admin.html" class="active" style="color: #ff5252;">Admin</a>
+            <button id="device-btn" onclick="toggleDeviceMode()" style="width: auto; padding: 6px 10px; font-size: 0.8rem; background: #1f293d; color: var(--primary-cyan);">📱 Vista Tel</button>
+            <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
         </div>
-        <div class="top-actions">
-            <a href="https://discord.gg/Gmn6zE942" target="_blank" class="btn-discord-top">Discord</a>
-            <button onclick="logout()" class="btn-logout">Esci</button>
-        </div>
-    </nav>
-
-    <div class="container">
-        <h2>Controllo Schedine e Classifica</h2>
-        
-        <!-- Blocco Chiusura Schedine & Reset Classifica -->
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <div>
-                <h3 style="margin:0; font-size:1.1rem;">Stato Pronostici</h3>
-                <p id="admin-lock-desc" style="margin: 5px 0 0 0; font-size:0.85rem;"></p>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="toggle-lock-btn" onclick="togglePredictionsLock()" style="width: auto; padding: 10px 18px;"></button>
-                <button onclick="resetLeaderboard()" class="btn-danger" style="width: auto; padding: 10px 18px;">🔄 Ripristina Classifica</button>
-            </div>
-        </div>
-
-        <h2>Gestione Partite</h2>
-        <div class="card">
-            <h3>Carica o Aggiungi Partite</h3>
-            <input type="text" id="homeTeam" placeholder="Squadra Casa">
-            <input type="text" id="awayTeam" placeholder="Squadra Ospite">
-            <button onclick="addMatch()">Crea Partita Singola</button>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--card-border);">
-            <button onclick="loadSampleSerieAMatches()" style="background: var(--primary-cyan); color: #0b111e;">⚡ Carica Giornata Serie A</button>
-        </div>
-
-        <h2>Inserisci Risultati Reali & Eventi</h2>
-        <div id="admin-matches-list"></div>
     </div>
 
-    <!-- NAVBAR MOBILE -->
-    <nav class="bottom-nav">
-        <a href="hub.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>Pronostici</a>
-        <a href="profili.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profili</a>
-        <a href="classifica.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H8v2h8v-2h-3v-2.1c2.08-.4 3.71-2 4.39-4.24C19.08 11.3 21 9.25 21 7V7c0-1.1-.9-2-2-2z"/></svg>Classifica</a>
-        <a href="community.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Community</a>
-        <a href="admin.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>Admin</a>
-    </nav>
+    <!-- Controllo Blocco Schedine -->
+    <div class="card" style="text-align: center;">
+        <h3>🔒 Blocco Globale Schedine</h3>
+        <p id="admin-lock-desc" style="font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 15px 0;">Stato caricamento...</p>
+        <button id="toggle-lock-btn" onclick="togglePredictionsLock()">Chiudi Pronostici Tutti</button>
+    </div>
+
+    <!-- Creazione Partite -->
+    <div class="card">
+        <h3>➕ Aggiungi Nuova Partita</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+            <input type="text" id="homeTeam" placeholder="Squadra di Casa (es. Inter)">
+            <input type="text" id="awayTeam" placeholder="Squadra Ospite (es. Milan)">
+            <button onclick="addMatch()">Crea Partita</button>
+            <button onclick="loadSampleSerieAMatches()" style="background: #1f293d; color: var(--primary-cyan); margin-top: 5px;">Carica Giornata Serie A Standard</button>
+        </div>
+    </div>
+
+    <!-- Lista Partite Inserite e Inserimento Risultati Reali -->
+    <div class="card">
+        <h3>⚽ Risultati Reali Giornata</h3>
+        <div id="admin-matches-list" style="margin-top: 12px;"></div>
+    </div>
 
     <script src="js/app.js"></script>
     <script>
-        checkAuth();
-        if (getCurrentRole() !== 'admin') {
-            alert('Accesso negato!');
-            window.location.href = 'hub.html';
-        }
-        loadAdminPanel();
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            if (getCurrentRole() !== 'admin') {
+                alert("Accesso negato! Pagina riservata all'Admin.");
+                window.location.href = 'hub.html';
+                return;
+            }
+            applyDeviceMode();
+            loadAdminPanel();
+        });
     </script>
 </body>
 </html>
