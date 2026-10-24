@@ -13,6 +13,7 @@
 </head>
 <body>
 
+    <!-- Navigation Bar -->
     <div class="navbar">
         <h2 style="margin: 0; color: var(--primary-cyan);">⚽ SantosPredictor</h2>
         <div class="nav-links">
@@ -21,23 +22,27 @@
             <a href="classifica.html">Classifica</a>
             <a href="profili.html">Profilo</a>
             <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">Admin</a>
+            <button id="device-btn" onclick="toggleDeviceMode()" style="width: auto; padding: 6px 10px; font-size: 0.8rem; background: #1f293d; color: var(--primary-cyan);">📱 Vista Tel</button>
             <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
         </div>
     </div>
 
-    <div class="card" style="margin-bottom: 20px; text-align: center;">
-        <div id="user-display" style="font-weight: bold; font-size: 1.1rem; color: var(--primary-cyan); margin-bottom: 8px;">
+    <!-- Stato Schedina e Utente -->
+    <div class="card" style="margin-bottom: 15px; text-align: center;">
+        <div id="user-display" style="font-weight: bold; font-size: 1.05rem; color: var(--primary-cyan); margin-bottom: 6px;">
             👤 Utente
         </div>
         <div id="lock-status"></div>
     </div>
 
-    <div id="matches-list" style="max-width: 600px; margin: 0 auto;"></div>
+    <!-- Lista Partite Schedina -->
+    <div id="matches-list"></div>
 
     <script src="js/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
+            applyDeviceMode();
             loadHubMatches();
         });
     </script>
