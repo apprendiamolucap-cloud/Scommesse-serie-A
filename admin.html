@@ -11,6 +11,7 @@
         <span>Pannello Admin</span>
         <div>
             <a href="hub.html">Torna all'Hub</a>
+            <a href="classifica.html">Classifica</a>
             <button onclick="logout()" class="btn-logout">Esci</button>
         </div>
     </nav>
@@ -20,7 +21,9 @@
         <div class="card">
             <input type="text" id="homeTeam" placeholder="Squadra Casa (es. Inter)">
             <input type="text" id="awayTeam" placeholder="Squadra Ospite (es. Milan)">
-            <button onclick="addMatch()">Crea Partita</button>
+            <button onclick="addMatch()">Crea Partita Singola</button>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
+            <button onclick="loadSampleSerieAMatches()" style="background-color: #28a745; color: white;">⚡ Carica Giornata Serie A (Top Match)</button>
         </div>
 
         <h2>Partite Create (Inserisci Risultato Reale)</h2>
@@ -30,7 +33,7 @@
     <script src="js/app.js"></script>
     <script>
         checkAuth();
-        if (currentUserRole !== 'admin') {
+        if (getCurrentRole() !== 'admin') {
             alert('Accesso negato! Solo gli admin possono accedere a questa pagina.');
             window.location.href = 'hub.html';
         }
