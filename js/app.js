@@ -11,14 +11,14 @@ const firebaseConfig = {
     measurementId: "G-90CQRJ2H8H"
 };
 
-// Inizializzazione Firebase globale (funziona se carichi gli script SDK nell'HTML)
+// Inizializzazione Firebase
 let auth, googleProvider;
 try {
     firebase.initializeApp(firebaseConfig);
     auth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
 } catch (e) {
-    console.log("Firebase SDK non ancora caricato o già inizializzato.");
+    console.log("Firebase SDK in attesa di caricamento...");
 }
 
 function loginWithGoogle() {
@@ -27,7 +27,7 @@ function loginWithGoogle() {
         return;
     }
 
-    // Controlla se l'utente ha selezionato Admin o Player nel form
+    // Controlla il ruolo selezionato nel form di index.html prima di aprire Google
     const roleInput = document.getElementById('role');
     const adminCodeInput = document.getElementById('admin-code');
     const selectedRole = roleInput ? roleInput.value : 'player';
@@ -56,16 +56,17 @@ function loginWithGoogle() {
                     avatar: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=151f32&color=00e5ff&size=128`,
                     color: '#f8fafc',
                     unlockedColors: ['#f8fafc'],
-                    completedMissions: []
+                    completedMissions: [],
+                    customAvatar: false
                 };
             } else if (user.photoURL && !profiles[username].customAvatar) {
-                // Se non ha impostato un'immagine personalizzata manuale, usa quella di Google
+                // Se non ha impostato una foto manuale, usa la foto di Google
                 profiles[username].avatar = user.photoURL;
             }
 
             localStorage.setItem('userProfiles', JSON.stringify(profiles));
 
-            // Reindirizza in base al ruolo scelto
+            // Reindirizza alla pagina corretta in base al ruolo
             window.location.href = (selectedRole === 'admin') ? 'admin.html' : 'hub.html';
         })
         .catch((error) => {
@@ -73,6 +74,7 @@ function loginWithGoogle() {
             alert("Errore Google Login: " + error.message);
         });
 }
+
 
 /* ==========================================================================
    1. CONFIGURAZIONE LOGHI SQUADRE SERIE A & MISSIONI
@@ -209,7 +211,8 @@ function getUserProfile(username) {
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=151f32&color=00e5ff&size=128`,
             color: '#f8fafc',
             unlockedColors: ['#f8fafc'],
-            completedMissions: []
+            completedMissions: [],
+            customAvatar: false
         };
         localStorage.setItem('userProfiles', JSON.stringify(profiles));
     }
@@ -217,17 +220,24 @@ function getUserProfile(username) {
 }
 
 function updateUserAvatar() {
-    const avatarUrl = document.getElementById('avatar-url-input').value.trim();
-    if (!avatarUrl) return alert("Inserisci un link valido!");
+    const avatarInput = document.getElementById('avatar-url-input');
+    if (!avatarInput) return;
     
+    const avatarUrl = avatarInput.value.trim();
+    if (!avatarUrl) return alert("Inserisci un URL immagine valido!");
+
     const currentUser = getCurrentUser();
+    if (!currentUser) return alert("Devi prima effettuare l'accesso!");
+
     let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
     let profile = getUserProfile(currentUser);
     
     profile.avatar = avatarUrl;
+    profile.customAvatar = true; // Impedisce sovrascritture automatiche da Google
     profiles[currentUser] = profile;
+    
     localStorage.setItem('userProfiles', JSON.stringify(profiles));
-    alert("Foto profilo aggiornata!");
+    alert("Foto profilo aggiornata con successo!");
     location.reload();
 }
 
@@ -237,13 +247,13 @@ function selectNameColor(colorHex) {
     let profile = getUserProfile(currentUser);
 
     if (!profile.unlockedColors.includes(colorHex)) {
-        return alert("Devi prima sbloccare questo colore completando la missione!");
+        return alert("Devi prima sbloccare questo colore completando la relativa missione!");
     }
 
     profile.color = colorHex;
     profiles[currentUser] = profile;
     localStorage.setItem('userProfiles', JSON.stringify(profiles));
-    alert("Colore nome aggiornato!");
+    alert("Colore del nome aggiornato!");
     location.reload();
 }
 
