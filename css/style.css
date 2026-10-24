@@ -1,13 +1,17 @@
+/* ==========================================================================
+   STILI GENERALI & TEMA NEON CYBERPUNK
+   ========================================================================== */
 :root {
-    --bg-main: #090d16;
-    --card-bg: #111827;
-    --card-border: #1f293d;
+    --bg-main: #070a12;
+    --card-bg: rgba(17, 24, 39, 0.85);
+    --card-border: rgba(0, 229, 255, 0.2);
     --primary-cyan: #00e5ff;
     --primary-green: #00e676;
     --danger: #ef4444;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --input-bg: #0d1424;
+    --input-bg: #0b1120;
+    --accent-purple: #7c3aed;
 }
 
 * {
@@ -17,62 +21,149 @@
 }
 
 body {
-    background-color: var(--bg-main);
+    background: var(--bg-main);
+    background-image: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #070a12 80%);
     color: var(--text-main);
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    padding: 12px;
+    padding: 10px;
     min-height: 100vh;
 }
 
+/* Layout stretto Mobile-First */
+body:not(.pc-mode) {
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   NAVBAR CON LOGO SERIE A E MENU HAMBURGER (3 LINEETTE)
+   ========================================================================== */
 .navbar {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    padding: 12px 18px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 18px;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-controls {
+    display: flex;
     align-items: center;
     gap: 12px;
-    background: var(--card-bg);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--card-border);
-    margin-bottom: 20px;
 }
 
-.nav-links {
+/* Logo Serie A Cliccabile */
+.seriea-logo {
+    width: 32px;
+    height: 38px;
+    object-fit: contain;
+    cursor: pointer;
+    filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.5));
+    transition: transform 0.2s;
+}
+
+.seriea-logo:hover {
+    transform: scale(1.1);
+}
+
+/* Icona Tre Lineette (Hamburger) */
+.hamburger-btn {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px 18px;
-    width: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 28px;
+    height: 22px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
-.nav-links a {
-    color: var(--text-muted);
+.hamburger-btn span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-cyan);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px var(--primary-cyan);
+}
+
+/* Menu a Tendina a Scomparsa */
+.nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 65px;
+    right: 0;
+    width: 220px;
+    background: rgba(13, 20, 36, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 12px;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: 100;
+}
+
+.nav-links.show {
+    display: flex;
+}
+
+.nav-links a, .nav-links button {
+    color: var(--text-main);
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.9rem;
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    text-align: left;
     transition: all 0.2s;
 }
 
-.nav-links a.active, .nav-links a:hover {
+.nav-links a:hover, .nav-links a.active {
+    background: rgba(0, 229, 255, 0.15);
     color: var(--primary-cyan);
-    background: rgba(0, 229, 255, 0.1);
+    border-left: 3px solid var(--primary-cyan);
 }
 
+/* ==========================================================================
+   CARDS & PARTITE CON EFFETTO NEON
+   ========================================================================== */
 .card, .match-box {
     background: var(--card-bg);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--card-border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.3s, transform 0.2s;
+}
+
+.match-box:hover {
+    border-color: rgba(0, 229, 255, 0.5);
 }
 
 .match-header {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .team-badge {
@@ -80,77 +171,98 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    width: 40%;
+    width: 42%;
     text-align: center;
 }
 
 .team-badge img {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
 }
 
 .team-badge span {
-    font-weight: bold;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
 }
 
 .vs-divider {
     font-weight: 900;
     color: var(--primary-cyan);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
+    background: rgba(0, 229, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 8px;
 }
 
+/* ==========================================================================
+   FORM, INPUT & PULSANTI
+   ========================================================================== */
 label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    margin: 10px 0 4px 2px;
+    margin: 8px 0 3px 2px;
+    font-weight: 600;
 }
 
 input[type="text"], 
 input[type="password"], 
 select {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid #334155;
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid #1e293b;
     background-color: var(--input-bg);
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 0.95rem;
     outline: none;
-    margin-bottom: 8px;
-    -webkit-appearance: none;
+    margin-bottom: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: var(--primary-cyan);
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 select {
-    background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%2300e5ff' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
     background-repeat: no-repeat;
     background-position: right 10px center;
-    padding-right: 35px;
+    padding-right: 32px;
 }
 
 button {
     width: 100%;
-    padding: 14px;
+    padding: 13px;
     border-radius: 10px;
     border: none;
-    background: var(--primary-cyan);
-    color: #090d16;
+    background: linear-gradient(135deg, #00e5ff 0%, #00b4d8 100%);
+    color: #070a12;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
     touch-action: manipulation;
-    transition: filter 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+    transition: transform 0.1s, filter 0.2s;
 }
 
-button:active { filter: brightness(0.85); }
-.btn-danger { background: var(--danger) !important; color: #fff !important; }
+button:active {
+    transform: scale(0.98);
+}
 
-@media (min-width: 600px) {
-    body { padding: 20px; }
-    .navbar { flex-direction: row; padding: 15px 25px; }
-    .nav-links { width: auto; gap: 20px; }
-    .card, .match-box { padding: 24px; }
-    .team-badge img { width: 56px; height: 56px; }
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Mode PC */
+body.pc-mode {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
 }
