@@ -51,7 +51,7 @@ nav div a:hover, nav div a.active {
     padding: 0 20px;
 }
 
-h1, h2 {
+h1, h2, h3 {
     color: var(--text-color);
     margin-bottom: 10px;
 }
@@ -102,15 +102,19 @@ button:hover {
     background-color: var(--primary-hover);
 }
 
+.btn-danger {
+    background-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
 .btn-logout {
     background-color: var(--danger);
     width: auto;
     padding: 6px 12px;
     font-size: 13px;
-}
-
-.btn-logout:hover {
-    background-color: #dc2626;
 }
 
 .match-box {
