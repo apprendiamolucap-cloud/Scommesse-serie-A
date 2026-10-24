@@ -50,6 +50,7 @@ function addMatch() {
     localStorage.setItem('matches', JSON.stringify(matches));
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
+    alert('Partita creata e salvata con successo!');
     loadAdminMatches();
 }
 
