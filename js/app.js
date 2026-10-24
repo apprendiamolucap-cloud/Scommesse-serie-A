@@ -249,7 +249,7 @@ function selectNameColor(colorHex) {
 
 
 /* ==========================================================================
-   4. HUB PRONOSTICI
+   4. HUB PRONOSTICI (ISOLATI PER UTENTE E RISULTATO MANUALE)
    ========================================================================== */
 function isPredictionsLocked() {
     return localStorage.getItem('predictionsLocked') === 'true';
@@ -265,7 +265,9 @@ function loadHubMatches() {
     let jokers = JSON.parse(localStorage.getItem('jokers')) || {};
     const currentUser = getCurrentUser();
 
-    let userHasSubmitted = predictions[currentUser] && Object.keys(predictions[currentUser]).length > 0;
+    // Legge SOLO i pronostici salvati per l'utente corrente
+    let userPredictions = predictions[currentUser] || {};
+    let userHasSubmitted = Object.keys(userPredictions).length > 0;
     let globalLocked = isPredictionsLocked();
     let userJoker = jokers[currentUser] || null;
 
@@ -284,9 +286,7 @@ function loadHubMatches() {
     }
 
     matches.forEach(match => {
-        let userPred = (predictions[currentUser] && predictions[currentUser][match.id]) 
-            ? predictions[currentUser][match.id] 
-            : { res: '', scorer: '', assist: '', ownGoal: '' };
+        let userPred = userPredictions[match.id] || { res: '', scorer: '', assist: '', ownGoal: '' };
 
         let isLockedForUser = globalLocked || userHasSubmitted;
         let disabledAttr = isLockedForUser ? 'disabled style="opacity:0.6; cursor:not-allowed;"' : '';
