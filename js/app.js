@@ -1,3 +1,44 @@
+// --- LOGHI SQUADRE SERIE A AUTOMATICI ---
+const TEAM_LOGOS = {
+    "inter": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
+    "milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/AC_Milan_logo.svg",
+    "juventus": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%28.svg",
+    "napoli": "https://upload.wikimedia.org/wikipedia/commons/2/28/SSC_Napoli_2020.svg",
+    "roma": "https://upload.wikimedia.org/wikipedia/commons/f/f7/AS_Roma_logo_%282017%29.svg",
+    "lazio": "https://upload.wikimedia.org/wikipedia/commons/7/76/S.S._Lazio_logo.svg",
+    "atalanta": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Atalanta_BC_logo.svg",
+    "fiorentina": "https://upload.wikimedia.org/wikipedia/commons/7/79/ACF_Fiorentina_2022.svg",
+    "bologna": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Bologna_fc_badge.svg",
+    "torino": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Torino_FC_Logo.svg"
+};
+
+function getTeamLogo(teamName) {
+    if (!teamName) return "https://via.placeholder.com/48?text=FC";
+    const cleanName = teamName.toLowerCase().trim();
+    return TEAM_LOGOS[cleanName] || `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=151f32&color=00e5ff&size=64&font-size=0.4`;
+}
+
+// --- SELETTORE VISTA MOBILE / PC ---
+function toggleDeviceMode() {
+    let mode = localStorage.getItem('deviceMode') || 'mobile';
+    let newMode = mode === 'mobile' ? 'pc' : 'mobile';
+    localStorage.setItem('deviceMode', newMode);
+    applyDeviceMode();
+}
+
+function applyDeviceMode() {
+    let mode = localStorage.getItem('deviceMode') || 'mobile';
+    const btn = document.getElementById('device-btn');
+    if (mode === 'pc') {
+        document.body.classList.add('pc-mode');
+        if (btn) btn.innerText = '📱 Vista Mobile';
+    } else {
+        document.body.classList.remove('pc-mode');
+        if (btn) btn.innerText = '🖥️ Vista PC';
+    }
+}
+
+// --- AUTENTICAZIONE ---
 function getCurrentUser() {
     return localStorage.getItem('username');
 }
@@ -54,12 +95,12 @@ function checkAuth() {
     
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
-        userDisplay.innerText = `👤 ${user} (${getCurrentRole()})`;
+        userDisplay.innerText = `👤 ${user}`;
     }
 
     const adminLink = document.getElementById('admin-link');
     if (adminLink && getCurrentRole() === 'admin') {
-        adminLink.style.display = 'inline';
+        adminLink.style.display = 'flex';
     }
 }
 
@@ -72,7 +113,7 @@ function togglePredictionsLock() {
     localStorage.setItem('predictionsLocked', !locked);
     if (!locked) {
         calculateAllPoints();
-        alert('Pronostici chiusi! I punti sono stati attivati e calcolati.');
+        alert('Pronostici chiusi! I punti sono stati calcolati.');
     } else {
         alert('Pronostici riaperti per i player.');
     }
@@ -86,16 +127,17 @@ function loadAdminPanel() {
     if (!desc || !btn) return;
 
     if (isPredictionsLocked()) {
-        desc.innerText = "Le schedine sono CHIUSE. I player non possono più modificarle e i punteggi sono attivi.";
+        desc.innerText = "Le schedine sono CHIUSE. Punteggi attivi.";
         btn.innerText = "Riapri Pronostici";
         btn.className = "";
     } else {
-        desc.innerText = "Le schedine sono APERTE. I player possono inserire e modificare i pronostici.";
+        desc.innerText = "Le schedine sono APERTE per tutti i player.";
         btn.innerText = "Chiudi Pronostici";
         btn.className = "btn-danger";
     }
 }
 
+// --- ADMIN PARTITE ---
 function addMatch() {
     const home = document.getElementById('homeTeam').value.trim();
     const away = document.getElementById('awayTeam').value.trim();
@@ -107,7 +149,7 @@ function addMatch() {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches.push({
-        id: Date.now() + Math.random(),
+        id: Date.now(),
         home: home,
         away: away,
         result: null,
@@ -150,15 +192,25 @@ function loadAdminMatches() {
     matches.forEach(match => {
         container.innerHTML += `
             <div class="match-box">
-                <strong>${match.home} vs ${match.away}</strong>
-                <p>Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa'}</p>
+                <div class="match-header">
+                    <div class="team-badge">
+                        <img src="${getTeamLogo(match.home)}" alt="${match.home}">
+                        <span>${match.home}</span>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="team-badge">
+                        <img src="${getTeamLogo(match.away)}" alt="${match.away}">
+                        <span>${match.away}</span>
+                    </div>
+                </div>
+                <p style="text-align:center;">Status: ${match.result ? 'Completata (' + match.result + ')' : 'In attesa'}</p>
                 <input type="text" id="res-${match.id}" placeholder="Risultato Reale (es. 2-1)" value="${match.result || ''}">
                 <input type="text" id="scorer-${match.id}" placeholder="Marcatore Reale" value="${match.scorer || ''}">
                 <input type="text" id="assist-${match.id}" placeholder="Assist Reale" value="${match.assist || ''}">
                 <input type="text" id="owngoal-${match.id}" placeholder="Autogol Reale" value="${match.ownGoal || ''}">
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="saveRealResult(${match.id})">Salva Risultato e Ricalcola</button>
-                    <button class="btn-danger" onclick="deleteMatch(${match.id})" style="width: auto;">Elimina Partita</button>
+                    <button onclick="saveRealResult(${match.id})">Salva e Ricalcola</button>
+                    <button class="btn-danger" onclick="deleteMatch(${match.id})" style="width: auto;">Elimina</button>
                 </div>
             </div>
         `;
@@ -184,21 +236,20 @@ function saveRealResult(matchId) {
 
     localStorage.setItem('matches', JSON.stringify(matches));
     calculateAllPoints();
-    alert('Dati salvati e punti aggiornati!');
+    alert('Dati salvati!');
     loadAdminMatches();
 }
 
 function deleteMatch(matchId) {
-    if (!confirm("Sei sicuro di voler eliminare questa partita dall'elenco?")) return;
-
+    if (!confirm("Eliminare questa partita?")) return;
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.filter(m => m.id != matchId);
     localStorage.setItem('matches', JSON.stringify(matches));
-
     calculateAllPoints();
     loadAdminMatches();
 }
 
+// --- PLAYER HUB PRONOSTICI (RISOLTO BUG SALVATAGGIO) ---
 function loadHubMatches() {
     const container = document.getElementById('matches-list');
     const statusContainer = document.getElementById('lock-status');
@@ -207,9 +258,9 @@ function loadHubMatches() {
     let locked = isPredictionsLocked();
     if (statusContainer) {
         if (locked) {
-            statusContainer.innerHTML = "<span style='color: var(--danger);'>🔒 Schedine Chiuse dall'Admin. Non puoi più modificare i pronostici.</span>";
+            statusContainer.innerHTML = "<p style='color: var(--danger); font-weight:bold;'>🔒 Schedine Chiuse dall'Admin. Impossibile modificare i pronostici.</p>";
         } else {
-            statusContainer.innerHTML = "<span style='color: var(--primary);'>🔓 Schedine Aperte. Inserisci o modifica i tuoi pronostici.</span>";
+            statusContainer.innerHTML = "<p style='color: var(--primary-green); font-weight:bold;'>🔓 Schedine Aperte. Inserisci i tuoi pronostici.</p>";
         }
     }
 
@@ -220,33 +271,47 @@ function loadHubMatches() {
     container.innerHTML = '';
 
     if (matches.length === 0) {
-        container.innerHTML = '<p>Nessuna partita disponibile.</p>';
+        container.innerHTML = '<p>Nessuna partita disponibile per questa giornata.</p>';
         return;
     }
 
     matches.forEach(match => {
-        let userPred = predictions[currentUser]?.[match.id] || { res: '', scorer: '', assist: '', ownGoal: '' };
-        let disabledAttr = locked ? 'disabled style="opacity: 0.6;"' : '';
+        let userPred = (predictions[currentUser] && predictions[currentUser][match.id]) 
+            ? predictions[currentUser][match.id] 
+            : { res: '', scorer: '', assist: '', ownGoal: '' };
+
+        let disabledAttr = locked ? 'disabled style="opacity:0.5;"' : '';
         let btnDisplay = locked ? 'style="display:none;"' : '';
 
         container.innerHTML += `
             <div class="match-box">
-                <h3>${match.home} vs ${match.away}</h3>
-                <label>Risultato Esatto:</label>
-                <input type="text" id="pred-res-${match.id}" value="${userPred.res}" placeholder="es. 2-1" ${disabledAttr}>
+                <div class="match-header">
+                    <div class="team-badge">
+                        <img src="${getTeamLogo(match.home)}" alt="${match.home}">
+                        <span>${match.home}</span>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="team-badge">
+                        <img src="${getTeamLogo(match.away)}" alt="${match.away}">
+                        <span>${match.away}</span>
+                    </div>
+                </div>
+
+                <label>Risultato Esatto (es. 2-1):</label>
+                <input type="text" id="pred-res-${match.id}" value="${userPred.res || ''}" placeholder="es. 2-1" ${disabledAttr}>
                 
                 <label>Marcatore (+2 pt):</label>
-                <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer}" placeholder="es. Lautaro" ${disabledAttr}>
+                <input type="text" id="pred-scorer-${match.id}" value="${userPred.scorer || ''}" placeholder="es. Lautaro" ${disabledAttr}>
                 
                 <label>Assist (+0.5 pt):</label>
-                <input type="text" id="pred-assist-${match.id}" value="${userPred.assist}" placeholder="es. Barella" ${disabledAttr}>
+                <input type="text" id="pred-assist-${match.id}" value="${userPred.assist || ''}" placeholder="es. Barella" ${disabledAttr}>
                 
                 <label>Autogol (-2 pt):</label>
-                <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal}" placeholder="es. Gatti" ${disabledAttr}>
+                <input type="text" id="pred-owngoal-${match.id}" value="${userPred.ownGoal || ''}" placeholder="es. Gatti" ${disabledAttr}>
                 
-                <div style="display: flex; gap: 10px; margin-top: 10px; ${btnDisplay}">
-                    <button onclick="savePrediction(${match.id})">Salva Pronostico</button>
-                    <button class="btn-danger" onclick="deletePrediction(${match.id})" style="width: auto;">Cancella Pronostico</button>
+                <div style="display: flex; gap: 10px; margin-top: 15px; ${btnDisplay}">
+                    <button onclick="savePrediction('${match.id}')">Salva Pronostico</button>
+                    <button class="btn-danger" onclick="deletePrediction('${match.id}')" style="width: auto;">Cancella</button>
                 </div>
             </div>
         `;
@@ -255,18 +320,26 @@ function loadHubMatches() {
 
 function savePrediction(matchId) {
     if (isPredictionsLocked()) {
-        alert("Le schedine sono state chiuse dall'admin! Impossibile salvare.");
+        alert("Schedine chiuse!");
         return;
     }
 
-    const res = document.getElementById(`pred-res-${matchId}`).value.trim();
-    const scorer = document.getElementById(`pred-scorer-${matchId}`).value.trim();
-    const assist = document.getElementById(`assist-${matchId}`).value.trim();
-    const ownGoal = document.getElementById(`pred-owngoal-${matchId}`).value.trim();
-    const currentUser = getCurrentUser();
+    const resInput = document.getElementById(`pred-res-${matchId}`);
+    const scorerInput = document.getElementById(`pred-scorer-${matchId}`);
+    const assistInput = document.getElementById(`pred-assist-${matchId}`);
+    const ownGoalInput = document.getElementById(`pred-owngoal-${matchId}`);
 
+    const res = resInput ? resInput.value.trim() : '';
+    const scorer = scorerInput ? scorerInput.value.trim() : '';
+    const assist = assistInput ? assistInput.value.trim() : '';
+    const ownGoal = ownGoalInput ? ownGoalInput.value.trim() : '';
+
+    const currentUser = getCurrentUser();
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
-    if (!predictions[currentUser]) predictions[currentUser] = {};
+
+    if (!predictions[currentUser]) {
+        predictions[currentUser] = {};
+    }
 
     predictions[currentUser][matchId] = { res, scorer, assist, ownGoal };
     localStorage.setItem('predictions', JSON.stringify(predictions));
@@ -274,10 +347,9 @@ function savePrediction(matchId) {
     alert('Pronostico salvato con successo!');
 }
 
-// CANCELLAZIONE SINGOLO PRONOSTICO PER IL PLAYER
 function deletePrediction(matchId) {
     if (isPredictionsLocked()) {
-        alert("Le schedine sono chiuse! Impossibile cancellare.");
+        alert("Schedine chiuse!");
         return;
     }
 
@@ -287,10 +359,8 @@ function deletePrediction(matchId) {
     if (predictions[currentUser] && predictions[currentUser][matchId]) {
         delete predictions[currentUser][matchId];
         localStorage.setItem('predictions', JSON.stringify(predictions));
-        alert('Pronostico rimosso per questa partita!');
+        alert('Pronostico cancellato!');
         loadHubMatches();
-    } else {
-        alert('Nessun pronostico presente da cancellare.');
     }
 }
 
@@ -305,23 +375,24 @@ function loadAllPlayerPredictions() {
     container.innerHTML = '';
 
     if (users.length === 0) {
-        container.innerHTML = '<p>Nessun pronostico inserito dai player finora.</p>';
+        container.innerHTML = '<p>Nessun pronostico registrato finora.</p>';
         return;
     }
 
     users.forEach(user => {
-        let userHtml = `<div class="card"><h3>👤 Giocatore: ${user}</h3>`;
+        let userHtml = `<div class="card"><h3>👤 Player: ${user}</h3>`;
         let userPreds = predictions[user];
 
         matches.forEach(match => {
             let p = userPreds[match.id];
             userHtml += `
-                <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+                <div style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--card-border);">
                     <strong>${match.home} vs ${match.away}</strong><br>
-                    <span>Risultato: <strong>${p ? (p.res || '-') : '-'}</strong></span> | 
-                    <span>Marcatore: <strong>${p ? (p.scorer || '-') : '-'}</strong></span> | 
-                    <span>Assist: <strong>${p ? (p.assist || '-') : '-'}</strong></span> | 
-                    <span>Autogol: <strong>${p ? (p.ownGoal || '-') : '-'}</strong></span>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">
+                        Risultato: <strong style="color:var(--primary-cyan);">${p ? (p.res || '-') : '-'}</strong> | 
+                        Marcatore: <strong>${p ? (p.scorer || '-') : '-'}</strong> | 
+                        Assist: <strong>${p ? (p.assist || '-') : '-'}</strong>
+                    </span>
                 </div>
             `;
         });
