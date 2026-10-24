@@ -1,4 +1,5 @@
-// Gestione Login & Autenticazione (persistente)
+// --- GESTIONE UTENTE E AUTENTICAZIONE ---
+
 function getCurrentUser() {
     return localStorage.getItem('username');
 }
@@ -38,6 +39,7 @@ function checkAuth() {
         window.location.href = 'index.html';
         return;
     }
+    
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
         userDisplay.innerText = `Utente: ${user} (${getCurrentRole()})`;
@@ -49,7 +51,9 @@ function checkAuth() {
     }
 }
 
-// Funzioni Admin: Aggiunta e Gestione Partite
+
+// --- FUNZIONI ADMIN (CREAZIONE E GESTIONE PARTITE) ---
+
 function addMatch() {
     const home = document.getElementById('homeTeam').value.trim();
     const away = document.getElementById('awayTeam').value.trim();
@@ -59,7 +63,7 @@ function addMatch() {
         return;
     }
 
-    // Recupera la lista esistente o crea un array vuoto
+    // Recupera la lista globale delle partite (condivisa con tutti i player)
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     
     const newMatch = {
@@ -73,14 +77,14 @@ function addMatch() {
     };
 
     matches.push(newMatch);
-    // Salva immediatamente su localStorage
+    
+    // Salva nel localStorage globale
     localStorage.setItem('matches', JSON.stringify(matches));
     
     alert('Partita creata e salvata con successo!');
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
     
-    // Ricarica la lista a schermo
     loadAdminMatches();
 }
 
@@ -134,11 +138,14 @@ function saveRealResult(matchId) {
     loadAdminMatches();
 }
 
-// Funzioni Player Hub: Inserimento Pronostici
+
+// --- FUNZIONI PLAYER (HUB E PRONOSTICI) ---
+
 function loadHubMatches() {
     const container = document.getElementById('matches-list');
     if (!container) return;
 
+    // Legge l'elenco globale delle partite create dall'admin
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
     const currentUser = getCurrentUser();
@@ -194,7 +201,9 @@ function savePrediction(matchId) {
     alert('Pronostico salvato con successo!');
 }
 
-// Algoritmo Punteggi
+
+// --- ALGORITMO DI CALCOLO PUNTEGGI ---
+
 function calculateAllPoints() {
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
@@ -205,7 +214,7 @@ function calculateAllPoints() {
         let userMatches = predictions[user];
 
         matches.forEach(match => {
-            if (!match.result) return; 
+            if (!match.result) return; // Salta se non c'è un risultato reale inserito
 
             let pred = userMatches[match.id];
             if (!pred) return;
@@ -213,65 +222,5 @@ function calculateAllPoints() {
             let realRes = match.result; 
             let userRes = pred.res;       
 
-            // 1. Risultato Esatto (+3 pt)
+            // 1. Risultato Esatto (+3 pt) o Segno/Squadra Vincitrice (+1 pt)
             if (userRes === realRes && realRes !== "") {
-                scores[user] += 3;
-            } else if (userRes && realRes) {
-                let [rHome, rAway] = realRes.split('-').map(Number);
-                let [uHome, uAway] = userRes.split('-').map(Number);
-
-                if (!isNaN(rHome) && !isNaN(uHome) && !isNaN(rAway) && !isNaN(uAway)) {
-                    let realWinner = Math.sign(rHome - rAway);
-                    let userWinner = Math.sign(uHome - uAway);
-
-                    if (realWinner === userWinner) {
-                        scores[user] += 1; // Squadra vincente presa (+1 pt)
-                    }
-                }
-            }
-
-            // 2. Marcatore (+2 pt)
-            if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
-                scores[user] += 2;
-            }
-
-            // 3. Assist (+0.5 pt)
-            if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
-                scores[user] += 0.5;
-            }
-
-            // 4. Autogol (-2 pt)
-            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
-                scores[user] -= 2;
-            }
-        });
-    });
-
-    localStorage.setItem('scores', JSON.stringify(scores));
-}
-
-// Caricamento Classifica
-function loadLeaderboard() {
-    const tbody = document.getElementById('ranking-body');
-    if (!tbody) return;
-
-    let scores = JSON.parse(localStorage.getItem('scores')) || {};
-    let sortedUsers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
-
-    tbody.innerHTML = '';
-
-    if (sortedUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">Nessun punteggio ancora registrato.</td></tr>';
-        return;
-    }
-
-    sortedUsers.forEach((user, index) => {
-        tbody.innerHTML += `
-            <tr>
-                <td>#${index + 1}</td>
-                <td>${user}</td>
-                <td><strong>${scores[user]}</strong> pt</td>
-            </tr>
-        `;
-    });
-}
