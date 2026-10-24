@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Serie A Predictor - Login</title>
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        function toggleAdminCode() {
+            const role = document.getElementById('role').value;
+            const codeContainer = document.getElementById('admin-code-container');
+            if (role === 'admin') {
+                codeContainer.style.display = 'block';
+            } else {
+                codeContainer.style.display = 'none';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container" style="margin-top: 100px; max-width: 450px;">
@@ -13,10 +24,17 @@
             <p>Accedi per inserire i tuoi pronostici</p>
             
             <input type="text" id="username" placeholder="Inserisci il tuo Username">
-            <select id="role">
+            
+            <select id="role" onchange="toggleAdminCode()">
                 <option value="player">Player</option>
                 <option value="admin">Admin</option>
             </select>
+
+            <!-- Campo per il codice segreto (inizialmente nascosto) -->
+            <div id="admin-code-container" style="display: none;">
+                <input type="password" id="admin-code" placeholder="Inserisci codice Admin (jamal)">
+            </div>
+
             <button onclick="login()">Entra nell'App</button>
         </div>
     </div>
