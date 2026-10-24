@@ -10,13 +10,23 @@
     <nav>
         <span>Pannello Admin</span>
         <div>
-            <a href="hub.html">Hub Pronostici</a>
+            <a href="hub.html">Pronostici</a>
+            <a href="profili.html">Profili</a>
             <a href="classifica.html">Classifica</a>
             <button onclick="logout()" class="btn-logout">Esci</button>
         </div>
     </nav>
 
     <div class="container">
+        <h2>Controllo Stato Pronostici</h2>
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin:0;">Stato Schedine</h3>
+                <p id="admin-lock-desc" style="margin: 5px 0 0 0;"></p>
+            </div>
+            <button id="toggle-lock-btn" onclick="togglePredictionsLock()" style="width: auto; padding: 10px 20px;"></button>
+        </div>
+
         <h2>Gestione Partite</h2>
         <div class="card">
             <h3>Aggiungi Partita Manuale</h3>
@@ -24,7 +34,7 @@
             <input type="text" id="awayTeam" placeholder="Squadra Ospite (es. Milan)">
             <button onclick="addMatch()">Crea Partita Singola</button>
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
-            <button onclick="loadSampleSerieAMatches()" style="background-color: #38bdf8; color: #0f172a;">⚡ Carica Giornata Serie A (Top Match)</button>
+            <button onclick="loadSampleSerieAMatches()" style="background-color: var(--accent); color: var(--bg-color);">⚡ Carica Giornata Serie A (Top Match)</button>
         </div>
 
         <h2>Inserisci Risultati Reali & Eventi</h2>
@@ -38,7 +48,7 @@
             alert('Accesso negato! Solo gli admin possono accedere.');
             window.location.href = 'hub.html';
         }
-        loadAdminMatches();
+        loadAdminPanel();
     </script>
 </body>
 </html>
