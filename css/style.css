@@ -266,3 +266,25 @@ body.pc-mode {
     margin: 0 auto;
     padding: 20px;
 }
+/* Risolve il problema del menu a tendina che va "dietro" */
+select {
+    position: relative;
+    z-index: 50;
+    background-color: var(--input-bg) !important;
+}
+
+/* Corregge la visualizzazione del logo Serie A nella navbar */
+.seriea-logo-container {
+    background: #000;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--primary-cyan);
+    letter-spacing: 1px;
+    border: 1px solid var(--card-border);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
