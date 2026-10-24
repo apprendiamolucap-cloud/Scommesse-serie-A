@@ -3,166 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SantosPredictor - Profilo Utente</title>
-    
+    <title>SantosPredictor - Profilo</title>
+
     <link rel="stylesheet" href="css/style.css">
 
     <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-    <style>
-        .profile-container {
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary-cyan);
-            background-color: var(--card-border);
-        }
-        .color-palette {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .color-dot {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #ffffff33;
-            transition: transform 0.2s;
-        }
-        .color-dot:hover { transform: scale(1.15); }
-        .mission-item {
-            background: var(--input-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .mission-badge {
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-        }
-        .badge-completed {
-            background: rgba(0, 230, 118, 0.2);
-            color: var(--primary-green);
-            border: 1px solid var(--primary-green);
-        }
-        .badge-pending {
-            background: rgba(148, 163, 184, 0.1);
-            color: var(--text-muted);
-            border: 1px solid #334155;
-        }
-    </style>
 </head>
 <body>
 
     <div class="navbar">
-        <h2 style="margin: 0; color: var(--primary-cyan);">⚽ SantosPredictor</h2>
-        <div class="nav-links">
-            <a href="hub.html">Hub Schedina</a>
-            <a href="community.html">Community</a>
-            <a href="classifica.html">Classifica</a>
-            <a href="profili.html" class="active">Profilo</a>
-            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">Admin</a>
-            <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
+        <div class="nav-brand">
+            <h2 style="margin: 0; color: var(--primary-cyan); font-size: 1.15rem;">👤 Profilo</h2>
+        </div>
+
+        <div class="nav-controls">
+            <a href="https://www.legaseriea.it" target="_blank" class="seriea-logo-container" title="Vai al sito Serie A">
+                SERIE A
+            </a>
+            <button class="hamburger-btn" onclick="toggleNavMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <div class="nav-links" id="nav-menu">
+            <a href="hub.html">🏠 Hub Schedina</a>
+            <a href="community.html">👥 Community</a>
+            <a href="classifica.html">🏆 Classifica</a>
+            <a href="profili.html" class="active">👤 Profilo</a>
+            <a href="https://discord.gg/Gmn6zE942" target="_blank" style="color: #5865F2;">💬 Server Discord</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">⚙️ Pannello Admin</a>
+            <a href="#" onclick="logout()" style="color: #ef4444;">🚪 Esci</a>
         </div>
     </div>
 
-    <div class="profile-container">
-        <div class="card">
-            <div class="profile-header">
-                <img id="my-avatar" class="profile-avatar" src="" alt="Foto Profilo" onerror="this.src='https://ui-avatars.com/api/?name=User&background=151f32&color=00e5ff&size=128';">
-                <div>
-                    <h2 id="my-username" style="margin: 0;">-</h2>
-                    <span id="my-role" style="color: var(--text-muted); font-size: 0.85rem; font-weight: bold;">PLAYER</span>
-                </div>
-            </div>
+    <div class="card" style="text-align: center;">
+        <img id="profile-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-cyan); margin-bottom: 10px;">
+        <h3 id="profile-username" style="color: var(--primary-cyan);">Utente</h3>
+        <p id="profile-role" style="font-size: 0.85rem; color: var(--text-muted);">Ruolo</p>
+    </div>
 
-            <hr style="border-color: var(--card-border); margin: 20px 0;">
+    <div class="card">
+        <h3>🖼️ Modifica Avatar (URL)</h3>
+        <input type="text" id="avatar-url-input" placeholder="https:// esempio.com/foto.jpg" style="margin-top: 10px;">
+        <button onclick="updateUserAvatar()" style="margin-top: 8px;">Salva Avatar</button>
+    </div>
 
-            <h3>🖼️ Cambia Foto Profilo</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Incolla il link diretto dell'immagine (.jpg, .png o .webp):</p>
-            <input type="text" id="avatar-url-input" placeholder="https://sito.com/immagine.jpg">
-            <button onclick="updateUserAvatar()">Aggiorna Foto</button>
-
-            <hr style="border-color: var(--card-border); margin: 20px 0;">
-
-            <h3>🎨 Colore Nome (Sbloccabili)</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem;">Clicca su un colore sbloccato per applicarlo al tuo nome:</p>
-            <div class="color-palette" id="color-picker-container"></div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top: 0; color: var(--primary-cyan);">🎯 Missioni & Ricompense</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Sblocca nuovi colori completando gli obiettivi:</p>
-            <div id="missions-list"></div>
-        </div>
+    <div class="card">
+        <h3>🏆 Missioni & Ricompense</h3>
+        <div id="missions-list" style="margin-top: 12px;"></div>
     </div>
 
     <script src="js/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
-            const user = getCurrentUser();
-            if (!user) return;
+            const currentUser = getCurrentUser();
+            const profile = getUserProfile(currentUser);
 
-            const profile = getUserProfile(user);
-
-            document.getElementById('my-avatar').src = profile.avatar;
-            document.getElementById('my-username').innerText = user;
-            document.getElementById('my-username').style.color = profile.color;
-            document.getElementById('my-role').innerText = getCurrentRole().toUpperCase();
-
-            const colorContainer = document.getElementById('color-picker-container');
-            if (colorContainer) {
-                colorContainer.innerHTML = '';
-                profile.unlockedColors.forEach(hex => {
-                    colorContainer.innerHTML += `
-                        <div class="color-dot" style="background-color: ${hex};" onclick="selectNameColor('${hex}')" title="Seleziona questo colore"></div>
-                    `;
-                });
-            }
+            document.getElementById('profile-avatar').src = profile.avatar;
+            document.getElementById('profile-username').innerText = currentUser;
+            document.getElementById('profile-role').innerText = `Ruolo: ${getCurrentRole().toUpperCase()}`;
 
             const missionsContainer = document.getElementById('missions-list');
-            if (missionsContainer) {
-                missionsContainer.innerHTML = '';
-                MISSIONS.forEach(mission => {
-                    const isCompleted = profile.completedMissions.includes(mission.id);
-                    missionsContainer.innerHTML += `
-                        <div class="mission-item">
-                            <div>
-                                <strong style="color: #f8fafc;">${mission.name}</strong><br>
-                                <span style="font-size:0.8rem; color: var(--text-muted);">${mission.desc}</span><br>
-                                <span style="font-size:0.75rem; color: ${mission.rewardColor}; font-weight: bold;">Premio: Colore ${mission.rewardName}</span>
-                            </div>
-                            <span class="mission-badge ${isCompleted ? 'badge-completed' : 'badge-pending'}">
-                                ${isCompleted ? '✓ Sbloccata' : '🔒 Incompleta'}
-                            </span>
-                        </div>
-                    `;
-                });
-            }
+            missionsContainer.innerHTML = '';
+            MISSIONS.forEach(m => {
+                let isCompleted = profile.completedMissions.includes(m.id);
+                missionsContainer.innerHTML += `
+                    <div style="background: var(--input-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid ${isCompleted ? 'var(--primary-green)' : 'var(--text-muted)'};">
+                        <strong>${m.name}</strong> ${isCompleted ? '✅' : '🔒'}<br>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">${m.desc}</span><br>
+                        <span style="font-size: 0.75rem; color: ${m.rewardColor};">Premio: ${m.rewardName}</span>
+                    </div>
+                `;
+            });
         });
     </script>
 </body>
