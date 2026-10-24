@@ -1,6 +1,3 @@
-/* ==========================================================================
-   STILI GENERALI & TEMA DARK CYBERPUNK
-   ========================================================================== */
 :root {
     --bg-main: #090d16;
     --card-bg: #111827;
@@ -27,9 +24,6 @@ body {
     min-height: 100vh;
 }
 
-/* ==========================================================================
-   NAVBAR RESPONSIVA (MOBILE FIRST)
-   ========================================================================== */
 .navbar {
     display: flex;
     flex-direction: column;
@@ -65,9 +59,6 @@ body {
     background: rgba(0, 229, 255, 0.1);
 }
 
-/* ==========================================================================
-   CARD & CONTENITORI
-   ========================================================================== */
 .card, .match-box {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -110,9 +101,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* ==========================================================================
-   INPUT, SELECT & PULSANTI OTTIMIZZATI PER MOBILE (TOUCH-FRIENDLY)
-   ========================================================================== */
 label {
     display: block;
     font-size: 0.85rem;
@@ -132,7 +120,7 @@ select {
     font-size: 1rem;
     outline: none;
     margin-bottom: 8px;
-    -webkit-appearance: none; /* Rimuove lo stile predefinito iOS */
+    -webkit-appearance: none;
 }
 
 select {
@@ -156,39 +144,13 @@ button {
     transition: filter 0.2s;
 }
 
-button:active {
-    filter: brightness(0.85);
-}
+button:active { filter: brightness(0.85); }
+.btn-danger { background: var(--danger) !important; color: #fff !important; }
 
-.btn-danger {
-    background: var(--danger) !important;
-    color: #fff !important;
-}
-
-/* ==========================================================================
-   MEDIA QUERIES PER TABLET & DESKTOP (PIÙ DI 600px)
-   ========================================================================== */
 @media (min-width: 600px) {
-    body {
-        padding: 20px;
-    }
-
-    .navbar {
-        flex-direction: row;
-        padding: 15px 25px;
-    }
-
-    .nav-links {
-        width: auto;
-        gap: 20px;
-    }
-
-    .card, .match-box {
-        padding: 24px;
-    }
-
-    .team-badge img {
-        width: 56px;
-        height: 56px;
-    }
+    body { padding: 20px; }
+    .navbar { flex-direction: row; padding: 15px 25px; }
+    .nav-links { width: auto; gap: 20px; }
+    .card, .match-box { padding: 24px; }
+    .team-badge img { width: 56px; height: 56px; }
 }
