@@ -4,105 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SantosPredictor - Community</title>
+
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .community-hero {
-            background: linear-gradient(135deg, #101726, #151f32);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .step-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .step-number {
-            background: #5865F2;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 800;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-    </style>
+
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <nav class="top-nav">
-        <div class="brand-container">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg" alt="Serie A" class="seriea-logo">
-            <span class="brand-title">SantosPredictor</span>
-        </div>
-        <div class="top-nav-links">
-            <a href="hub.html">Pronostici</a>
-            <a href="profili.html">Profili & Schedine</a>
-            <a href="classifica.html">Classifica</a>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <h2 style="margin: 0; color: var(--primary-cyan);">👥 Community</h2>
+        <div class="nav-links">
+            <a href="hub.html">Hub Schedina</a>
             <a href="community.html" class="active">Community</a>
-        </div>
-        <div class="top-actions">
-            <button onclick="toggleDeviceMode()" id="device-btn" class="device-toggle-btn">🖥️ Vista PC</button>
-            <a href="https://discord.gg/Gmn6zE942" target="_blank" class="btn-discord-top">Discord</a>
-            <span id="user-display" style="font-size: 0.85rem;"></span>
-            <button onclick="logout()" class="btn-logout">Esci</button>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="community-hero">
-            <h2>🎮 Spazio Community & Discord</h2>
-            <p style="color: var(--text-muted);">Il punto di ritrovo ufficiale per tutti i player di SantosPredictor.</p>
-            <a href="https://discord.gg/Gmn6zE942" target="_blank" class="btn-discord-action" style="background:#5865F2; color:white; padding:12px 25px; border-radius:8px; text-decoration:none; font-weight:bold; display:inline-block; margin-top:10px;">Unisciti al Server Discord</a>
-        </div>
-
-        <h3>Come partecipare alla community</h3>
-        <div class="step-card">
-            <div class="step-number">1</div>
-            <div>
-                <h4 style="margin:0 0 5px 0; color:var(--primary-cyan);">Scarica Discord</h4>
-                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Disponibile per PC, Mac, iOS e Android.</p>
-            </div>
-        </div>
-        <div class="step-card">
-            <div class="step-number">2</div>
-            <div>
-                <h4 style="margin:0 0 5px 0; color:var(--primary-cyan);">Crea il tuo profilo</h4>
-                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Usa lo stesso nickname che hai registrato qui sull'app.</p>
-            </div>
-        </div>
-        <div class="step-card">
-            <div class="step-number">3</div>
-            <div>
-                <h4 style="margin:0 0 5px 0; color:var(--primary-cyan);">Entra in chat</h4>
-                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Discuti le giornate di Serie A e guarda chi vince la classifica.</p>
-            </div>
+            <a href="classifica.html">Classifica</a>
+            <a href="profili.html">Profilo</a>
+            <a href="admin.html" id="admin-link" style="display: none; color: #ff5252;">Admin</a>
+            <button id="device-btn" onclick="toggleDeviceMode()" style="width: auto; padding: 6px 10px; font-size: 0.8rem; background: #1f293d; color: var(--primary-cyan);">📱 Vista Tel</button>
+            <a href="#" onclick="logout()" style="color: #ef4444;">Esci</a>
         </div>
     </div>
 
-    <!-- NAVBAR MOBILE -->
-    <nav class="bottom-nav">
-        <a href="hub.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>Pronostici</a>
-        <a href="profili.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profili</a>
-        <a href="classifica.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V18H8v2h8v-2h-3v-2.1c2.08-.4 3.71-2 4.39-4.24C19.08 11.3 21 9.25 21 7V7c0-1.1-.9-2-2-2z"/></svg>Classifica</a>
-        <a href="community.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Community</a>
-        <a id="admin-link" href="admin.html" class="nav-item" style="display:none;"><svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>Admin</a>
-    </nav>
+    <div style="text-align: center; margin-bottom: 15px;">
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Confronta i pronostici inviati da tutti gli altri giocatori della lega:</p>
+    </div>
+
+    <!-- Contenitore delle schedine inviate da tutti i player -->
+    <div id="all-predictions-list"></div>
 
     <script src="js/app.js"></script>
     <script>
-        checkAuth();
-        applyDeviceMode();
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            applyDeviceMode();
+            loadAllPlayerPredictions();
+        });
     </script>
 </body>
 </html>
