@@ -1,4 +1,56 @@
 /* ==========================================================================
+   0. CONFIGURAZIONE FIREBASE & GOOGLE AUTH (GMAIL)
+   ========================================================================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyByIrkfzoKxatFbdsaedpgGs7duWDpYidw",
+    authDomain: "serie-a-ce615.firebaseapp.com",
+    projectId: "serie-a-ce615",
+    storageBucket: "serie-a-ce615.firebasestorage.app",
+    messagingSenderId: "476222155796",
+    appId: "1:476222155796:web:2cbae94cd5d07955becb01",
+    measurementId: "G-90CQRJ2H8H"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Funzione di Login rapido con Gmail / Google
+function loginWithGoogle() {
+    signInWithPopup(auth, googleProvider)
+        .then((result) => {
+            const user = result.user;
+            const username = user.displayName || user.email.split('@')[0];
+            
+            localStorage.setItem('username', username);
+            localStorage.setItem('role', 'player');
+            
+            let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
+            if (!profiles[username]) {
+                profiles[username] = {
+                    avatar: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=151f32&color=00e5ff&size=128`,
+                    color: '#f8fafc',
+                    unlockedColors: ['#f8fafc'],
+                    completedMissions: []
+                };
+                localStorage.setItem('userProfiles', JSON.stringify(profiles));
+            }
+
+            window.location.href = 'hub.html';
+        })
+        .catch((error) => {
+            console.error("Errore login Google:", error.message);
+            alert("Errore durante l'accesso con Google: " + error.message);
+        });
+}
+
+// Esporta la funzione a livello globale per i bottoni HTML
+window.loginWithGoogle = loginWithGoogle;
+
+/* ==========================================================================
    1. CONFIGURAZIONE LOGHI SQUADRE SERIE A & MISSIONI
    ========================================================================== */
 const TEAM_LOGOS = {
@@ -591,6 +643,8 @@ function loadLeaderboard() {
         return;
     }
 
+    sortedUsers.groupby?.(); // sicurezza
+
     sortedUsers.forEach((user, index) => {
         let userProfile = getUserProfile(user);
         tbody.innerHTML += `
@@ -612,3 +666,6 @@ function resetLeaderboard() {
     alert('Classifica azzerata con successo!');
     loadLeaderboard();
 }
+
+// Esporta la funzione firebase nel contesto globale se richiamata da HTML via onclick
+window.loginWithGoogle = loginWithGoogle;
