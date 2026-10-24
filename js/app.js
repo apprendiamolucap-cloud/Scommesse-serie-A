@@ -1,5 +1,5 @@
 /* ==========================================================================
-   0. CONFIGURAZIONE & GOOGLE AUTH (GMAIL) VIA FIREBASE CDN
+   0. CONFIGURAZIONE & GOOGLE AUTH VIA FIREBASE CDN
    ========================================================================== */
 const firebaseConfig = {
     apiKey: "AIzaSyByIrkfzoKxatFbdsaedpgGs7duWDpYidw",
@@ -17,25 +17,18 @@ try {
     auth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
 } catch (e) {
-    console.log("Firebase SDK in attesa di caricamento...");
+    console.log("Firebase SDK in caricamento...");
 }
 
 function loginWithGoogle() {
-    if (!auth) {
-        alert("Firebase non è ancora pronto. Ricarica la pagina.");
-        return;
-    }
+    if (!auth) return alert("Firebase non è pronto. Ricarica la pagina.");
 
     const roleInput = document.getElementById('role');
     const adminCodeInput = document.getElementById('admin-code');
     const selectedRole = roleInput ? roleInput.value : 'player';
 
-    if (selectedRole === 'admin') {
-        const code = adminCodeInput ? adminCodeInput.value.trim() : '';
-        if (code !== 'jamal') {
-            alert('Codice segreto Admin errato! Accesso negato.');
-            return;
-        }
+    if (selectedRole === 'admin' && adminCodeInput && adminCodeInput.value.trim() !== 'jamal') {
+        return alert('Codice segreto Admin errato! Accesso negato.');
     }
 
     auth.signInWithPopup(googleProvider)
@@ -63,7 +56,7 @@ function loginWithGoogle() {
             window.location.href = (selectedRole === 'admin') ? 'admin.html' : 'hub.html';
         })
         .catch((error) => {
-            console.error("ERRORE FIREBASE AUTH:", error.code, error.message);
+            console.error("ERRORE AUTH:", error);
             alert("Errore Google Login: " + error.message);
         });
 }
@@ -263,7 +256,7 @@ function loadHubMatches() {
 
     container.innerHTML = '';
     if (matches.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Nessuna partita disponibile.</p>';
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Nessuna partita disponibile. L\'admin deve caricare la giornata!</p>';
         return;
     }
 
@@ -379,7 +372,7 @@ function loadAllPlayerPredictions() {
 
 
 /* ==========================================================================
-   4. PANNELLO ADMIN (RISULTATO SCRITTO + GIOCATORI SELEZIONABILI)
+   4. PANNELLO ADMIN
    ========================================================================== */
 function togglePredictionsLock() {
     let locked = isPredictionsLocked();
