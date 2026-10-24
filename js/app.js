@@ -18,8 +18,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Funzione di Login rapido con Gmail / Google
 function loginWithGoogle() {
+    console.log("Tentativo di accesso con Google avviato...");
     signInWithPopup(auth, googleProvider)
         .then((result) => {
             const user = result.user;
@@ -42,13 +42,13 @@ function loginWithGoogle() {
             window.location.href = 'hub.html';
         })
         .catch((error) => {
-            console.error("Errore login Google:", error.message);
-            alert("Errore durante l'accesso con Google: " + error.message);
+            console.error("ERRORE FIREBASE AUTH:", error.code, error.message);
+            alert("Errore Google Login: " + error.message);
         });
 }
 
-// Esporta la funzione a livello globale per i bottoni HTML
 window.loginWithGoogle = loginWithGoogle;
+
 
 /* ==========================================================================
    1. CONFIGURAZIONE LOGHI SQUADRE SERIE A & MISSIONI
@@ -643,8 +643,6 @@ function loadLeaderboard() {
         return;
     }
 
-    sortedUsers.groupby?.(); // sicurezza
-
     sortedUsers.forEach((user, index) => {
         let userProfile = getUserProfile(user);
         tbody.innerHTML += `
@@ -666,6 +664,3 @@ function resetLeaderboard() {
     alert('Classifica azzerata con successo!');
     loadLeaderboard();
 }
-
-// Esporta la funzione firebase nel contesto globale se richiamata da HTML via onclick
-window.loginWithGoogle = loginWithGoogle;
