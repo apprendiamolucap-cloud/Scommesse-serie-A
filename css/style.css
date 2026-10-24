@@ -1,13 +1,13 @@
 :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
+    --bg-color: #0b111e;
+    --card-bg: #151f32;
+    --card-border: #233148;
     --text-color: #f8fafc;
-    --text-muted: #94a3b8;
-    --primary: #10b981;
-    --primary-hover: #059669;
-    --accent: #38bdf8;
-    --danger: #ef4444;
-    --border: #334155;
+    --text-muted: #8b9bb4;
+    --primary-cyan: #00e5ff;
+    --primary-green: #00e676;
+    --discord-color: #5865F2;
+    --danger: #ff5252;
 }
 
 body {
@@ -15,66 +15,140 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
-    padding: 0;
+    padding-bottom: 90px;
 }
 
-nav {
-    background-color: var(--card-bg);
-    border-bottom: 1px solid var(--border);
-    padding: 15px 30px;
+/* NAVBAR SUPERIORE */
+nav.top-nav {
+    background-color: #101726;
+    border-bottom: 1px solid var(--card-border);
+    padding: 15px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-nav span {
+.brand-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--primary-cyan), var(--primary-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-discord-top {
+    background-color: var(--discord-color);
+    color: white;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s, opacity 0.2s;
 }
 
-nav div a {
+.btn-discord-top:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+/* NAVBAR IN BASSO */
+nav.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #101726;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: var(--text-muted);
     text-decoration: none;
-    margin-left: 20px;
-    font-weight: 500;
-    transition: color 0.2s;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
-nav div a:hover, nav div a.active {
-    color: var(--primary);
+.nav-item svg {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 4px;
+    fill: currentColor;
 }
 
+.nav-item:hover, .nav-item.active {
+    color: var(--primary-cyan);
+}
+
+.nav-item.discord-item:hover {
+    color: var(--discord-color);
+}
+
+/* CONTAINER E CARD */
 .container {
-    max-width: 850px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-h1, h2, h3 {
-    color: var(--text-color);
-    margin-bottom: 10px;
-}
-
-p {
-    color: var(--text-muted);
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 15px;
 }
 
 .card {
     background: var(--card-bg);
-    border: 1px solid var(--border);
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--card-border);
+    padding: 20px;
+    border-radius: 14px;
     margin-bottom: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.match-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.match-box h3 {
+    margin: 0 0 15px 0;
+    text-align: center;
+    color: var(--primary-cyan);
+    font-size: 1.2rem;
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 10px;
 }
 
 input, select {
     width: 100%;
     padding: 12px;
-    margin: 10px 0 20px 0;
-    background-color: #0f172a;
-    border: 1px solid var(--border);
+    margin: 6px 0 12px 0;
+    background-color: #0b111e;
+    border: 1px solid var(--card-border);
     color: var(--text-color);
     border-radius: 8px;
     box-sizing: border-box;
@@ -83,75 +157,55 @@ input, select {
 
 input:focus, select:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--primary-cyan);
 }
 
 button {
-    background-color: var(--primary);
-    color: white;
+    background: linear-gradient(135deg, #00b0ff, #00e676);
+    color: #0b111e;
     border: none;
     padding: 12px 20px;
-    font-weight: 600;
+    font-weight: 700;
     border-radius: 8px;
     cursor: pointer;
     width: 100%;
-    transition: background-color 0.2s;
+    transition: opacity 0.2s;
 }
 
 button:hover {
-    background-color: var(--primary-hover);
+    opacity: 0.9;
 }
 
 .btn-danger {
-    background-color: var(--danger);
-}
-
-.btn-danger:hover {
-    background-color: #dc2626;
+    background: var(--danger);
+    color: white;
 }
 
 .btn-logout {
-    background-color: var(--danger);
+    background: var(--danger);
+    color: white;
     width: auto;
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
 }
 
-.match-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-}
-
-.match-box h3 {
-    margin-top: 0;
-    color: var(--accent);
-}
-
+/* CLASSIFICA */
 .ranking-table {
     width: 100%;
     background: var(--card-bg);
     border-collapse: collapse;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid var(--card-border);
 }
 
 .ranking-table th, .ranking-table td {
     padding: 15px;
     text-align: left;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--card-border);
 }
 
 .ranking-table th {
-    background-color: #111827;
+    background-color: #0d1424;
     color: var(--text-muted);
-    font-weight: 600;
-}
-
-.ranking-table tr:last-child td {
-    border-bottom: none;
 }
