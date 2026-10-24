@@ -1,6 +1,11 @@
-// Gestione Login & Autenticazione
-let currentUsername = localStorage.getItem('username');
-let currentUserRole = localStorage.getItem('role');
+// Gestione Login & Autenticazione (persistente)
+function getCurrentUser() {
+    return localStorage.getItem('username');
+}
+
+function getCurrentRole() {
+    return localStorage.getItem('role');
+}
 
 function login() {
     const username = document.getElementById('username').value.trim();
@@ -28,15 +33,18 @@ function logout() {
 }
 
 function checkAuth() {
-    if (!currentUsername) {
+    const user = getCurrentUser();
+    if (!user) {
         window.location.href = 'index.html';
         return;
     }
     const userDisplay = document.getElementById('user-display');
-    if (userDisplay) userDisplay.innerText = `Utente: ${currentUsername} (${currentUserRole})`;
+    if (userDisplay) {
+        userDisplay.innerText = `Utente: ${user} (${getCurrentRole()})`;
+    }
 
     const adminLink = document.getElementById('admin-link');
-    if (adminLink && currentUserRole === 'admin') {
+    if (adminLink && getCurrentRole() === 'admin') {
         adminLink.style.display = 'inline';
     }
 }
@@ -51,25 +59,28 @@ function addMatch() {
         return;
     }
 
+    // Recupera la lista esistente o crea un array vuoto
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     
     const newMatch = {
         id: Date.now(),
         home: home,
         away: away,
-        result: null, // es. "2-1"
-        scorer: null,  // es. "Lautaro"
-        assist: null,  // es. "Barella"
-        ownGoal: null  // es. "Gatti"
+        result: null, 
+        scorer: null,  
+        assist: null,  
+        ownGoal: null  
     };
 
     matches.push(newMatch);
+    // Salva immediatamente su localStorage
     localStorage.setItem('matches', JSON.stringify(matches));
     
-    alert('Partita creata con successo!');
+    alert('Partita creata e salvata con successo!');
     document.getElementById('homeTeam').value = '';
     document.getElementById('awayTeam').value = '';
     
+    // Ricarica la lista a schermo
     loadAdminMatches();
 }
 
@@ -108,7 +119,7 @@ function saveRealResult(matchId) {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     matches = matches.map(m => {
-        if (m.id === matchId) {
+        if (m.id === Number(matchId)) {
             m.result = res;
             m.scorer = scorer;
             m.assist = assist;
@@ -130,6 +141,7 @@ function loadHubMatches() {
 
     let matches = JSON.parse(localStorage.getItem('matches')) || [];
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
+    const currentUser = getCurrentUser();
 
     container.innerHTML = '';
 
@@ -139,7 +151,7 @@ function loadHubMatches() {
     }
 
     matches.forEach(match => {
-        let userPred = predictions[currentUsername]?.[match.id] || { res: '', scorer: '', assist: '', ownGoal: '' };
+        let userPred = predictions[currentUser]?.[match.id] || { res: '', scorer: '', assist: '', ownGoal: '' };
 
         container.innerHTML += `
             <div class="match-box">
@@ -167,19 +179,19 @@ function savePrediction(matchId) {
     const scorer = document.getElementById(`pred-scorer-${matchId}`).value.trim();
     const assist = document.getElementById(`pred-assist-${matchId}`).value.trim();
     const ownGoal = document.getElementById(`pred-owngoal-${matchId}`).value.trim();
+    const currentUser = getCurrentUser();
 
     let predictions = JSON.parse(localStorage.getItem('predictions')) || {};
 
-    if (!predictions[currentUsername]) {
-        predictions[currentUsername] = {};
+    if (!predictions[currentUser]) {
+        predictions[currentUser] = {};
     }
 
-    predictions[currentUsername][matchId] = { res, scorer, assist, ownGoal };
+    predictions[currentUser][matchId] = { res, scorer, assist, ownGoal };
     localStorage.setItem('predictions', JSON.stringify(predictions));
     
-    // Aggiorna subito la classifica
     calculateAllPoints();
-    alert('Pronostico salvato!');
+    alert('Pronostico salvato con successo!');
 }
 
 // Algoritmo Punteggi
@@ -193,19 +205,18 @@ function calculateAllPoints() {
         let userMatches = predictions[user];
 
         matches.forEach(match => {
-            if (!match.result) return; // Se non c'è un risultato reale inserito, salta
+            if (!match.result) return; 
 
             let pred = userMatches[match.id];
             if (!pred) return;
 
-            let realRes = match.result; // es. "2-1"
-            let userRes = pred.res;       // es. "2-1"
+            let realRes = match.result; 
+            let userRes = pred.res;       
 
             // 1. Risultato Esatto (+3 pt)
             if (userRes === realRes && realRes !== "") {
                 scores[user] += 3;
             } else if (userRes && realRes) {
-                // Se non ha preso il risultato esatto, verifica la squadra vincente (+1 pt)
                 let [rHome, rAway] = realRes.split('-').map(Number);
                 let [uHome, uAway] = userRes.split('-').map(Number);
 
@@ -214,23 +225,23 @@ function calculateAllPoints() {
                     let userWinner = Math.sign(uHome - uAway);
 
                     if (realWinner === userWinner) {
-                        scores[user] += 1;
+                        scores[user] += 1; // Squadra vincente presa (+1 pt)
                     }
                 }
             }
 
             // 2. Marcatore (+2 pt)
-            if (match.scorer && pred.scorer && match.scorer.toLowerCase() === pred.scorer.toLowerCase()) {
+            if (match.scorer && pred.scorer && match.scorer.toLowerCase().trim() === pred.scorer.toLowerCase().trim()) {
                 scores[user] += 2;
             }
 
             // 3. Assist (+0.5 pt)
-            if (match.assist && pred.assist && match.assist.toLowerCase() === pred.assist.toLowerCase()) {
+            if (match.assist && pred.assist && match.assist.toLowerCase().trim() === pred.assist.toLowerCase().trim()) {
                 scores[user] += 0.5;
             }
 
             // 4. Autogol (-2 pt)
-            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase() === pred.ownGoal.toLowerCase()) {
+            if (match.ownGoal && pred.ownGoal && match.ownGoal.toLowerCase().trim() === pred.ownGoal.toLowerCase().trim()) {
                 scores[user] -= 2;
             }
         });
