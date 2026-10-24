@@ -63,7 +63,30 @@ function loginWithGoogle() {
 
 
 /* ==========================================================================
-   1. LOGHI & ROSE SQUADRE SERIE A
+   1. GESTIONE MODALITÀ SCHERMO (VISTA TEL / VISTA PC)
+   ========================================================================== */
+function toggleDeviceMode() {
+    let mode = localStorage.getItem('deviceMode') || 'mobile';
+    let newMode = mode === 'mobile' ? 'pc' : 'mobile';
+    localStorage.setItem('deviceMode', newMode);
+    applyDeviceMode();
+}
+
+function applyDeviceMode() {
+    let mode = localStorage.getItem('deviceMode') || 'mobile';
+    const btn = document.getElementById('device-btn');
+    if (mode === 'pc') {
+        document.body.classList.add('pc-mode');
+        if (btn) btn.innerText = '📱 Vista Tel';
+    } else {
+        document.body.classList.remove('pc-mode');
+        if (btn) btn.innerText = '🖥️ Vista PC';
+    }
+}
+
+
+/* ==========================================================================
+   2. LOGHI & ROSE SQUADRE SERIE A
    ========================================================================== */
 const TEAM_LOGOS = {
     "inter": "https://media.api-sports.io/football/teams/505.png",
@@ -136,7 +159,7 @@ const MISSIONS = [
 
 
 /* ==========================================================================
-   2. AUTENTICAZIONE & PROFILI UTENTE
+   3. AUTENTICAZIONE & PROFILI UTENTE
    ========================================================================== */
 function getCurrentUser() { return localStorage.getItem('username'); }
 function getCurrentRole() { return localStorage.getItem('role'); }
@@ -226,7 +249,7 @@ function selectNameColor(colorHex) {
 
 
 /* ==========================================================================
-   3. HUB PRONOSTICI (RISULTATO SCRITTO + GIOCATORI SELEZIONABILI)
+   4. HUB PRONOSTICI
    ========================================================================== */
 function isPredictionsLocked() {
     return localStorage.getItem('predictionsLocked') === 'true';
@@ -372,7 +395,7 @@ function loadAllPlayerPredictions() {
 
 
 /* ==========================================================================
-   4. PANNELLO ADMIN
+   5. PANNELLO ADMIN
    ========================================================================== */
 function togglePredictionsLock() {
     let locked = isPredictionsLocked();
@@ -497,7 +520,7 @@ function deleteMatch(matchId) {
 
 
 /* ==========================================================================
-   5. CLASSIFICA & MISSIONI
+   6. CLASSIFICA & MISSIONI
    ========================================================================== */
 function checkAndRewardMissions(username, actionType) {
     let profiles = JSON.parse(localStorage.getItem('userProfiles')) || {};
